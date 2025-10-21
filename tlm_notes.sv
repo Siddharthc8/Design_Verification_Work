@@ -177,6 +177,121 @@ End
 
 Env: mon.ap.connect(scb.fifo.analysis_export)
 
--------------------------------------------------------
+------------------------------------------------------
+//Scoreboard
+
+ class out_of_order_scoreboard #(type T=packet) extends uvm_scoreboard;
+
+//Section S2 : create scb_type typed to out_of_order_scoreboard#(T)
+typedef out_of_order_scoreboard #(T) scb_type;
+
+//Section S3 : Register out_of_order_scoreboard into factory
+`uvm_component_param_utils(scb_type)
+
+//Section S4 : Define type_name of const static string type
+const static string type_name= $sformatf("out_of_order_scoreboard #(%0s)",$typename(T));
+
+//Section S5 : Define get_type_name method
+virtual function string get_type_name();
+return type_name;
+endfunction
+
+//Section S6: Define custom analysis ports to receive packet from iMon/oMonitor
+`uvm_analysis_imp_decl(_inp)
+`uvm_analysis_imp_decl(_outp)
+
+//Section S7: Define analysis port to receive packet from iMonitor
+uvm_analysis_imp_inp #(T,scb_type) mon_inp;
+//Section S8: Define analysis port to receive packet from oMonitor
+uvm_analysis_imp_outp #(T,scb_type) mon_outp;
+
+//Section S9.1: Define queue q_inp to store packets from all monitors
+T q_inp[$];
+
+//Section S9.2: Define variables m_matches and m_mismatches
+bit [31:0] m_matches,m_mismatches;
+
+//Section S9.3: Define variables no_of_pkts_recvd to keep track of packet count
+  bit[31:0] no_of_pkts_recvd;
+
+//Section S10 : Define standard custom constructor
+function new(string name="out_of_order_scoreboard",uvm_component parent);
+	super.new(name,parent);
+	`uvm_info(get_type_name(),"NEW scoreboard",UVM_NONE);
+endfunction
+//Section S11: Define build_phase to construct object for analysis ports
+virtual function void build_phase(uvm_phase phase);
+	super.build_phase(phase);
+
+//Section S11.2 : Construct object for mon_inp analysis port
+	mon_inp=new("mon_inp",this);
+//Section S11.3 : Construct object for mon_outp analysis port
+	mon_outp=new("mon_outp",this);
+endfunction
+//Section S12: Define write_inp to receive packets from iMonitor and store in q_inp
+	virtual function void write_inp(T pkt);
+		T pkt_in;
+//Section S12.1: clone the received pkt 
+		$cast(pkt_in,pkt.clone());
+//Section S12.2: Store the cloned pkt_in 
+		q_inp.push_back(pkt_in);
+
+	endfunction
+//Section S13: Define write_outp to receive packets from oMonitor and search and compare
+	virtual function void write_outp(T recvd_pkt);
+		T ref_pkt;
+		int get_index[$];
+		int index;
+		bit done;
+//Section S13.1: Keep track of the received pkt count
+		no_of_pkts_recvd++;
+
+//Section S13.2: Search for matching pkt in q_inp with addr as the search criteria
+		get_index=q_inp.find_index() with (item.PADDR==recvd_pkt.PADDR);
+
+//Section S13.3: Loop through all matched indices 
+		foreach( get_index[i]) begin
+			index=get_index[i];
+	//Section S13.4: get the pkt object from q_inp 
+			ref_pkt=q_inp[index];
+	//Section S13.5: Compare recived pkt with the ref_pkt object from q_inp
+			if(ref_pkt.PWDATA==recvd_pkt.PRDATA) begin
+	   //Section S13.6: Increment the m_matches count if pkt matches
+				m_matches++;
+		//Section S13.7: Delete matched pkt from q_inp	
+				q_inp.delete(index);
+				`uvm_info("SCB_MATCH",$sformatf("Packet %0d Matched",no_of_pkts_recvd),UVM_NONE);
+				done=1;
+		//Section S13.8: Break the foreach loop as we have matching pkt	
+				break;
+			end   
+	   //Section S13.9: Loop through untill all indices exhaust	in get_index
+			else done=0;
+		end
+ //Section S13.10: Increment m_mismatches count as none of the pkt from q_inp matches
+		if(!done) begin
+			m_mismatches++;
+          `uvm_error("SCB_NO_MATCH",$sformatf("***Matching Packet NOT Found for the pkt_id=%0d***",no_of_pkts_recvd));
+			`uvm_info("SCB",$sformatf("Expected::%0s",ref_pkt.convert2string()),UVM_NONE);
+			`uvm_info("SCB",$sformatf("Received::%0s",recvd_pkt.convert2string()),UVM_NONE);
+			done=0;
+		end
+	endfunction
+//Section S14 : Implement extract_phase to send m_matches/m_mismatches count to environment
+	virtual function void extract_phase(uvm_phase phase);
+//Section S14.1 : use uvm_config_db::set to send m_matches count to environment
+		uvm_config_db #(int)::set(null,"uvm_test_top.env","matches",m_matches);
+//Section S14.2 : use uvm_config_db::set to send m_mismatches count to environment
+		uvm_config_db #(int)::set(null,"uvm_test_top.env","m_mismatches",m_mismatches);
+	endfunction
+
+//Section S15 : Define report_phase to print m_matches/m_mismatches count.
+	function void report_phase (uvm_phase phase);
+		`uvm_info("SCB",$sformatf("Scoreboard completed with matches=%0d mismatches=%0d",m_matches,m_mismatches),UVM_NONE);
+	endfunction
+endclass
+
+    
+
 
 
