@@ -1,0 +1,367 @@
+//  * Everything is driven on Posedge of clock, Valid signal is qualifier for all rest of the signals
+//  * SOP is start of packet, when new packet starts SOP stays high for one clock cycle
+//  * EOP is end of packet, When packet ends EOP stays high for one clock
+//  * pkt_len indicates packet length in no. of bytes. and it is valid at SOP only. For example, pkt_length = 37, total packet size is 37 bytes
+//  * Data is valid from SOP to EOP including them. There can be idle cycles in between.
+
+class monitor extends uvm_monitor;
+`uvm_component_utils(monitor)
+  
+   transaction tr;     //    bit   [7:0]  data[ ];
+   amazon_if vif;
+   int i = 0;
+         
+   function new(input string path = "monitor", uvm_component parent = null);
+       super.new(path, parent);
+   endfunction
+
+
+task run_phase(uvm_phase phase); 
+
+forever begin
+@(vif.cb);
+
+tr = transaction::type_id::create(“tr”);
+
+wait(vif.cb.sop==1’b1 && vif.cb.valid==1);
+tr.pkt_len=vif.cb.pkt_len;
+tr.data = new[tr.pkt_len];
+
+
+while(vif.cb.eop==0 ) begin
+if(vif.cb.valid==1) begin
+tr.data[i++] = vif.cb.data;
+@(vif.cb);  
+	end
+end
+
+wait (vif.cb.valid==1 && vif.cb.eop==1) ;
+tr.data[i++] = vif.cb.data;
+
+
+if(i!=tr.pkt_len) $uvm_error(“INVALID_DATA_LEN”,”,...”);
+send_port.write(tr);
+end
+Endtask
+
+
+// TEMP CODE DELETE AFTER SEEING
+
+//  * Everything is driven on Posedge of clock, Valid signal is qualifier for all rest of the signals
+//  * SOP is start of packet, when new packet starts SOP stays high for one clock cycle
+//  * EOP is end of packet, When packet ends EOP stays high for one clock
+//  * pkt_len indicates packet length in no. of bytes. and it is valid at SOP only. For example, pkt_length = 37, total packet size is 37 bytes
+//  * Data is valid from SOP to EOP including them. There can be idle cycles in between.
+
+
+virtual task run_phase(uvm_phase phase);
+        super.run_phase(phase);
+        
+        forever begin
+        
+            @(posedge vif.clk);
+            tr = transaction::type_id::create("tr");
+            
+            // We are waiting for valid and SOP to become high
+            wait(vif.SOP && vif.valid);
+            tr.pkt_len = vif.pkt_len;          // Sample the packet length 
+            tr.data = new[tr.pkt_len];         // set the data size array to eb of the incoming data size
+            i = 0;                             
+            
+            // as long as it is not EOP we can sample based on valid
+            while(!vif.eop) begin         // Suggestion is that do not iterate over pkt_len as it may contain error so use vif.eop
+            
+                if(vif.valid) begin
+                    tr.data[i++] = vif.data;
+                    @(posedge vif.clk);
+                end
+            end
+            
+	// There could be idle cycles in between 
+            if(vif.eop) begin
+                if(vif.valid) begin       // This "if" statement is my own
+                    tr.data[i++] = vif.data;
+                    @(posedge vif.clk);
+                end
+            end
+            
+            send.write(tr);
+        end
+        
+    endtask 
+// Dummy 
+
+task run_phase1(uvm_phase phase);
+    super.run_phase1(phase);
+    
+    forever begin
+        
+        @(posedge vif.clk);
+        tr = transaction::type_id::create("tr");
+        
+        wait(vif.sop && vif.valid);
+        tr.pkt_len = vif.pkt_len;
+        tr.data = new[tr.pkt_len];
+        i = 0;
+        
+        tr.data[i++] = vif.data;            // Sample data at SOP
+        
+        while (1) begin        // Suggestion is that do not iterate over pkt_len as it may contain error
+            @(posedge vif.clk);
+            
+            if(!vif.valid) begin     // Actually not needed 
+                continue;
+            end
+            else if(vif.valid && !vif.eop) begin
+                tr.data[i++] = vif.data;
+            end
+            else if(vif.valid && vif.eop) begin
+                tr.data[i++] = vif.data;      // Sample data at SOP
+                // Can use <  but != checks for both more packets and less packets
+                if(i != tr.pkt_len) 
+                    `uvm_error("MON", $sformatf("EOP is at bit %0d, actual pkt_len %0d", i, tr.pkt_len)); 
+                break;
+            end
+        end
+    end
+    
+    endtask
+
+
+
+
+
+virtual task run_phase(uvm_phase phase);
+       super.run_phase(phase);
+      
+       forever begin
+      
+           @(posedge vif.clk);
+           tr = transaction::type_id::create("tr");
+          
+           // We are waiting for valid and SOP to become high
+           wait(vif.SOP && vif.valid);
+           tr.pkt_len = vif.pkt_len;          // Sample the packet length
+           tr.data = new[tr.pkt_len];         // set the data size array to eb of the incoming data size
+           i = 0;                            
+          @(posedge vif.clk);
+           // as long as it is not EOP we can sample based on valid
+           while(!vif.eop) begin         // Suggestion is that do not iterate over pkt_len as it may contain error so use vif.eop
+               
+               if(vif.valid) begin
+                   
+                   tr.data[i++] = vif.data;
+                   @(posedge vif.clk);
+               end
+           end
+          
+           if(vif.eop) begin
+               if(vif.valid) begin       // This "if" statement is my own
+                   tr.data[i++] = vif.data;
+                   @(posedge vif.clk);
+               end
+           end
+	    
+All good
+No good
+           ////////////
+          wait(vif.EOP == 1 and vid.valid == 1);
+	   Tr.data[i++] = vif.data;
+           send.write(tr);
+       end
+      
+   endtask
+
+
+
+
+task run_phase1(uvm_phase phase);
+   super.run_phase1(phase);
+  
+   forever begin
+      
+       @(posedge vif.clk);
+       tr = transaction::type_id::create("tr");
+      
+       wait(vif.sop && vif.valid);
+       tr.pkt_len = vif.pkt_len;
+       tr.data = new[tr.pkt_len];
+       i = 0;
+      
+       tr.data[i++] = vif.data;            // Sample data at SOP
+      
+       while (1) begin        // Suggestion is that do not iterate over pkt_len as it may contain error
+           @(posedge vif.clk);
+          
+           if(!vif.valid) begin     // Actually not needed
+               continue;
+           end
+           else if(vif.valid && !vif.eop) begin
+               tr.data[i++] = vif.data;
+           end
+           else if(vif.valid && vif.eop) begin
+               tr.data[i++] = vif.data;      // Sample data at SOP
+               // Can use <  but != checks for both more packets and less packets
+               if(i != tr.pkt_len)
+                   `uvm_error("MON", $sformatf("EOP is at bit %0d, actual pkt_len %0d", i, tr.pkt_len));
+               break;
+           end
+       end
+   end
+
+
+Endclass
+
+
+
+
+
+
+
+Write a sv code to match the an existing pattern. You get 32 bit every clock cycle and match it with 64 bit existing pattern.
+
+ABCD DEAD BEEF
+Pattern = “DEAD BEEF”
+
+module m;
+Bit clk;
+Bit [31:0] q[];
+Bit flag=1;
+Bit [31:0]data;
+bit [31*3:0]dummy
+String PATTERN= “DEADBEEF”;
+Initial begin
+
+
+While (flag) begin
+
+@(posedge clk);
+if( q.size !==3)  q.push_back(data);  
+
+if(q.size==3) begin
+	dummy=
+   	 if( PATTERN=={ q[1],q[0]}) $display(“yes”);  pattern == q
+    	else $display(“No”);
+        q={};
+end
+
+end
+end
+
+Endmodule
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module m(
+Input Bit clk;
+Output reg out;
+Input bit [31:0] input;
+);
+Reg [95:0] register;
+Parameter Pattern = 64’hDEADBEEFCAFEBABE;
+
+Always(@posedge clk) begin
+	
+	Out <= 0;
+	
+	Register = {input, register[63:0]};//BABE XXXXXXXXX
+	
+for(int i = 0; i< 31; i++) begin
+	if(Pattern == register[ i+:64] ) begin
+		Out <= 1;
+	end
+end
+	
+end
+
+
+
+
+endmodule
+
+
+
+
+
+
+
+TLM interfaces (Port connects implementation port)
+
+I. uvm_sequencer : uvm_blocking_get_imp seq_item_export;
+uvm_driver:  uvm_blocking_get_port seq_item_port;
+
+
+drv.seq_item_port.connect(seqr.seq_item_export)// RT error
+
+
+Analysis ports
+iMon : uvm_analysis_port #(transaction) ap;
+SCB: uvm_analysis_imp #(transaction,scb) ap_export;
+
+Agent(drv,seq,iMon)
+ iMon.ap.connect(scb.ap_export)
+
+
+
+
+
+
+made adbe efcd
+module pattern_matcher();
+    
+    
+// METHOD 1 EASY NOT SYNTHESIZABLE SAID BY AI    
+module pattern_det (
+  input wire clk,
+  input wire [31:0] data,
+  output reg pat_detected
+);
+  parameter [63:0] pattern = 64'hDEADBEEFCAFEBABE;
+
+  reg [95:0] buffer;
+  logic temp_out;
+
+  always @(posedge clk) begin
+    // Slide in 32 bits every cycle
+    buffer <= {buffer[63:0], data};
+    temp_out <= 0;
+
+    // Instead of 33 comparisons in parallel, we do one per clock
+    for (int i = 0; i <= 32; i = i + 1) begin
+      if (buffer[i +: 64] == pattern) begin// buffer[i:i+63]
+        temp_out <= 1;
+      end
+    end
+  end
+  
+  assign pat_detected = temp_out ? 1'b1 : 1'b0;
+				// OR
+  assign pat_detected = temp_out;
+	
+endmodule
+
