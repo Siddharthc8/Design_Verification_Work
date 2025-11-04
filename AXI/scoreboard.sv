@@ -44,7 +44,7 @@ virtual function void write_inp(T pkt);
         bit addr_flag,data_flag,rresp_flag; 
 
             foreach(ref_pkt.awaddr_arr[i]) begin
-                if(ref_pkt.awaddr_arr[i] !=recvd_pkt.araddr_arr[i] )  begin
+                if(ref_pkt.awaddr_arr[i] != recvd_pkt.araddr_arr[i] )  begin
                         `uvm_error("SCB_ADDR_MISMATCH",$sformatf("beat with expected addr %0h is mismatching  with recvd add %0h ",ref_pkt.awaddr_arr[i],recvd_pkt.araddr_arr[i]));
                         addr_flag=1;
                         break;
@@ -53,7 +53,7 @@ virtual function void write_inp(T pkt);
             end
 
             foreach(ref_pkt.wdata_arr[i]) begin
-                if(ref_pkt.wdata_arr[i] !=recvd_pkt.rdata_arr[i] )  begin
+                if(ref_pkt.wdata_arr[i] != recvd_pkt.rdata_arr[i] )  begin
                         `uvm_error("SCB_DATA_MISMATCH",$sformatf("beat with expected data %0h is mismatching  with recvd data %0h ",ref_pkt.wdata_arr[i],recvd_pkt.rdata_arr[i]));
                         data_flag=1;
                         break;

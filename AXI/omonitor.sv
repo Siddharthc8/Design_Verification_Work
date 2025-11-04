@@ -36,16 +36,16 @@ task oMonitor ::run_phase(uvm_phase phase);
         if(vif.cb_mon.reset==0) begin
             trans=transaction::type_id::create("trans",this);
   //address read
-            wait(vif.cb_mon.arvalid==1 && vif.cb_mon.arready==1);
+            wait(vif.cb_mon.arvalid == 1 && vif.cb_mon.arready==1);
             trans.arlen     = vif.cb_mon.arlen;
-            trans.araddr_arr= new[trans.arlen+1];
+            trans.araddr_arr = new[trans.arlen+1];
             trans.rdata_arr    = new[trans.arlen+1];
-            trans.araddr_arr[0]=vif.cb_mon.araddr;
+            trans.araddr_arr[0] = vif.cb_mon.araddr;
        
 //read data & resp
             for(int i=0;i<=trans.arlen;i++) begin
-            wait(vif.cb_mon.rvalid==1 && vif.cb_mon.rready==1);
-            if(i)  trans.araddr_arr[i]=trans.araddr_arr[i-1]+4;//you will tell trans.awaddr[i]=vif.cb.next_addr
+            wait(vif.cb_mon.rvalid == 1 && vif.cb_mon.rready==1);
+            if(i)  trans.araddr_arr[i]=trans.araddr_arr[i-1]+4;      // You will tell trans.awaddr[i]=vif.cb.next_addr
             trans.wstrb=vif.cb_mon.wstrb;
             trans.rdata_arr[i]=vif.cb_mon.rdata;
             trans.rresp_arr[i]=vif.cb_mon.rresp;
