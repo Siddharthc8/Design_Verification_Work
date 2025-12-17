@@ -44,11 +44,11 @@ class my_virtual_sequence extends uvm_sequence;
 `uvm_declare_p_sequencer(my_virtual_sequencer)
 virtual task body(); 
 fork
- `uvm_do_on(axi_seq, p_sequencer.axi_seqr);
-begin
-    `uvm_do_on(apb_seq, p_sequencer.apb_seqr);
-  `uvm_do_on(i2c_seq, p_sequencer.i2c_seqr);
-End
+  `uvm_do_on(axi_seq, p_sequencer.axi_seqr);
+  begin
+      `uvm_do_on(apb_seq, p_sequencer.apb_seqr);
+    `uvm_do_on(i2c_seq, p_sequencer.i2c_seqr);
+  end
 …
 join
 endtask
