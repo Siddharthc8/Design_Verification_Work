@@ -27,12 +27,6 @@ class transaction extends uvm_sequence_item;
     bit  [2:0]             awprot;
   
 
-  bit [ADDR_WIDTH:0] awaddr_q[$];
-    bit [ADDR_WIDTH:0] araddr_q[$];
-    bit [DATA_WIDTH:0] wdata_q[$];
-    bit [DATA_WIDTH:0] wstrb_q[$]; 
-    bit [DATA_WIDTH:0] rdata_q[$];
-    bit         [1:0]  rresp_q[$];
     
     //WRITE DATA BUS
     rand bit  [ID_WIDTH:0]        wid;  
@@ -64,19 +58,30 @@ class transaction extends uvm_sequence_item;
    
     
     //READ DATA BUS
-   rand  bit  [ID_WIDTH:0]             rid;
+    rand  bit  [ID_WIDTH:0]             rid;
     bit  [DATA_WIDTH:0]            rdata;
     resp_type            rresp;
     bit                    rlast;
     bit                    rvalid;
     bit               rready;
 
-    constraint id_cw{ awid == wid; wid== bid; solve awid before wid;}
+    //QUEUE DECLARATIONS
+    bit [ADDR_WIDTH:0] awaddr_q[$];
+    bit [ADDR_WIDTH:0] araddr_q[$];
+    bit [DATA_WIDTH:0] wdata_q[$];
+    bit [DATA_WIDTH:0] wstrb_q[$]; 
+    bit [DATA_WIDTH:0] rdata_q[$];
+  	bit         [1:0]  rresp_q[$];
+  
+  
+  // CONSTRAINTS
+  
+    constraint id_cw{ awid == wid; wid == bid; solve awid before wid;}
     constraint id_cr{//id  inside {[1:15]};
       arid == rid;}
 
     constraint size_c{ soft awsize==2 && arsize==2;}
-  constraint burst_c{soft awburst==INCR;}               
+    constraint burst_c{soft awburst==INCR;}               
     constraint len_c{soft awlen==arlen;}                       // —--> TEMP
     constraint addr_c{
                               soft awaddr inside {[100:200]};
@@ -147,6 +152,7 @@ endfunction
    `uvm_field_queue_int(awaddr_q,UVM_ALL_ON)
 
    //WRITE DATA BUS
+   `uvm_field_int(wid,UVM_ALL_ON)
    `uvm_field_int(wdata,UVM_ALL_ON)
    `uvm_field_int(wstrb,UVM_ALL_ON)
    `uvm_field_int(wlast,UVM_ALL_ON)

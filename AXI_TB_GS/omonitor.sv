@@ -39,6 +39,9 @@ endclass
 
             //ADDR READ CHANNEL
             wait (vif.cb_mon.arvalid == 1) ;
+
+            tr = transaction::type_id::create("tr");
+
             tr.arid    = vif.cb_mon.arid;
             tr.araddr  = vif.cb_mon.araddr;
             tr.arlen   = vif.cb_mon.arlen;

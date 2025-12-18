@@ -64,6 +64,7 @@ task drive(transaction tr);
             read_data(tr);
         end
       join_any
+  disable fork;
 
 endtask
 
@@ -73,6 +74,7 @@ endtask
 
 
      task write_address(transaction tr);
+         @(vif.cb);
          `uvm_info("Driver-write",$sformatf("WRITE ADDRESS BUS started with addr=%0d",tr.awaddr),UVM_MEDIUM);
           vif.cb.awid       <=     tr.awid;
           vif.cb.awaddr     <=     tr.awaddr;
@@ -102,28 +104,23 @@ endtask
   // Write data count is not assigned any value so check in the code below
   //████████████████████████████████████████████████████████████
 	task write_data(transaction tr);
-           int write_data_count = 0;
            int temp = 0;
            `uvm_info("Driver-write",$sformatf("WRITE DATA BUS started with AWBURST=%0d",tr.awburst),UVM_MEDIUM);
            
-      	   repeat(tr.awlen+1) begin
-             
+      		  for(int i = 0; i<=tr.awlen; i++) begin
+               
               @(vif.cb);
-              vif.cb.wdata      <=     $urandom;
-              vif.cb.wstrb <= tr.wstrb; 
-              vif.cb.wvalid <= 0;
-
-              temp = $urandom_range(0,10);
-             
-              repeat(temp) @(vif.cb);
-             
-              vif.cb.wvalid     <=     1;
-
-              if(write_data_count == tr.awlen) vif.cb.wlast <=1;
-              else  vif.cb.wlast <= 0;
-
+              vif.cb.wdata        <=     $urandom;
+              vif.cb.wstrb        <=     tr.wstrb; 
+              // vif.cb.wvalid <= 0;
+              //temp = $urandom_range(0,10);           
+              // repeat(temp) @(vif.cb);            
+        	    if(i == tr.awlen) 
+                vif.cb.wlast       <=     1;  
+              else  vif.cb.wlast   <=     0;
+              vif.cb.wvalid        <=     1;
+              @(vif.cb);
               wait(vif.cb.wready==1);
-              write_data_count++;
 
               // —---------------- @(vif.cb); vif.cb.wvalid <= 0;
            end
@@ -142,6 +139,8 @@ endtask
      endtask
 
      task read_address(transaction tr);
+       
+       	@(vif.cb);
         `uvm_info("Driver-read",$sformatf("READ ADDRESS BUS started with addr=%0d",tr.araddr),UVM_MEDIUM);
 
           vif.cb.arid       <=     tr.arid;
