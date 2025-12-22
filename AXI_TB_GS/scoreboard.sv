@@ -12,10 +12,10 @@ virtual function string get_type_name();
 return type_name;
 endfunction
 
-`uvm_analysis_imp_decl(_inp)
+`uvm_analysis_imp_decl(_in)
 `uvm_analysis_imp_decl(_out)
 
-uvm_analysis_imp_inp #(T,scb_type) mon_in;
+uvm_analysis_imp_in #(T,scb_type) mon_in;
 uvm_analysis_imp_out #(T,scb_type) mon_out;
 
 //T q_inp[$]; might need in future
@@ -38,7 +38,7 @@ virtual function void build_phase(uvm_phase phase);
 endfunction
 	
 
-virtual function void write_inp(T pkt);
+virtual function void write_in(T pkt);
   
 	    $cast( ref_pkt, pkt.clone() );
         //	`uvm_info("SCB_INP",$sformatf("ADDR: %0p,Expected::%0p",pkt.awaddr_arr,pkt.wdata_arr),UVM_NONE);
