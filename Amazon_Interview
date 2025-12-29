@@ -29,13 +29,13 @@ tr.data = new[tr.pkt_len];
 
 
 while(vif.cb.eop==0 ) begin
-if(vif.cb.valid==1) begin
-tr.data[i++] = vif.cb.data;
-@(vif.cb);  
+    if(vif.cb.valid==1) begin
+        tr.data[i++] = vif.cb.data;
+        @(vif.cb);  
 	end
 end
 
-wait (vif.cb.valid==1 && vif.cb.eop==1) ;
+wait (vif.cb.eop==1 && vif.cb.valid==1) ;
 tr.data[i++] = vif.cb.data;
 
 
