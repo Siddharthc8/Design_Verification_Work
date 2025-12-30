@@ -60,7 +60,10 @@ class iMonitor extends uvm_monitor;
           tr.awaddr_q.delete();
           tr.wstrb_q.delete();
 
-      `uvm_info(get_type_name(), $sformatf(" End of waddr channel "), UVM_MEDIUM);
+          if(tr.burst_type == WRAP)
+            tr.calculate_wrap_range(tr.awaddr, tr.awlen, tr.awsize);
+
+        `uvm_info(get_type_name(), $sformatf(" End of waddr channel "), UVM_MEDIUM);
 
     //----------------------------------------------------------------------------------------//
     //                                 WRITE DATA CHANNEL                                       
@@ -68,31 +71,11 @@ class iMonitor extends uvm_monitor;
 
         for(int i = 0; i <= tr.awlen; i++) begin                      //monitor till wlast comes
 
-                // Wait for WVALID first (with timeout)
-            fork
-                begin
-                    wait (vif.cb_mon.wvalid == 1);
-                end
-                begin
-                    repeat(WVALID_TIMEOUT) @(vif.cb_mon);
-                    `uvm_fatal(get_type_name(), $sformatf("Timeout waiting for WVALID on beat %0d", i));
-                end
-            join_any
-            disable fork;
-
-              `uvm_info(get_type_name(), $sformatf("WVALID asserted for beat %0d, waiting for WREADY", i), UVM_LOW);
+            // Wait for WVALID first (with timeout)
+            wvalid_timeout(i);
 
             // Wait for wready (with timeout)
-            fork
-                begin
-                    wait (vif.cb_mon.wvalid == 1 && vif.cb_mon.wready == 1);
-                end
-                begin
-                    repeat(WREADY_TIMEOUT) @(vif.cb_mon);
-                    `uvm_error(get_type_name(), $sformatf("Timeout: WREADY never asserted for beat %0d", i));
-                end
-            join_any
-            disable fork;
+            wready_timeout(i);
 
             // Check if handshake actually completed
             if (vif.cb_mon.wvalid == 1 && vif.cb_mon.wready == 1) begin
@@ -110,11 +93,13 @@ class iMonitor extends uvm_monitor;
 
                   INCR: begin		
                       tr.awaddr_q.push_back(next_starting_addr);
-                      next_starting_addr =  incr_addr_calc(next_starting_addr);
+                      next_starting_addr =  incr_addr_calc(next_starting_addr, tr.wstrb);
                   end
 
                   WRAP: begin
-                    //......//
+                      tr.awaddr_q.push_back(next_starting_addr);
+                      next_starting_addr =  incr_addr_calc(next_starting_addr, tr.wstrb);
+                      tr.check_wrap(next_starting_addr)
                   end
 
                 endcase
@@ -141,12 +126,41 @@ class iMonitor extends uvm_monitor;
 
 
 
-    function bit[31:0]  incr_addr_calc(bit [31:0] addr);
-      for(int j = 0; j < 2**tr.awsize; j++) 
-        if(tr.wstrb[j]) addr++;
-      return addr;
+    function bit[31:0]  incr_addr_calc(bit [31:0] addr, bit [STRB_WIDTH-1:0] wstrb);
+      int count = 0
+      int lane;
+      int offset;
+      count = $countones(wstrb)
+      return addr + count;
     endfunction
 
+    task wvalid_timeout(input int i);
+      fork
+        begin
+            wait (vif.cb_mon.wvalid == 1);
+        end
+        begin
+            repeat(WVALID_TIMEOUT) @(vif.cb_mon);
+            `uvm_fatal(get_type_name(), $sformatf("Timeout waiting for WVALID on beat %0d", i));
+        end
+      join_any
+      disable fork;
+
+      `uvm_info(get_type_name(), $sformatf("WVALID asserted for beat %0d, waiting for WREADY", i), UVM_LOW);
+    endtask
+
+    task wready_timeout(input int i);
+      fork
+        begin
+            wait (vif.cb_mon.wvalid == 1 && vif.cb_mon.wready == 1);
+        end
+        begin
+            repeat(WREADY_TIMEOUT) @(vif.cb_mon);
+            `uvm_error(get_type_name(), $sformatf("Timeout: WREADY never asserted for beat %0d", i));
+        end
+      join_any
+      disable fork;
+    endtask
 
 endclass
       

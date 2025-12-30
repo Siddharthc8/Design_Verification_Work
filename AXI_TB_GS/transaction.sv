@@ -14,8 +14,8 @@ class transaction extends uvm_sequence_item;
 
 
     //WRITE ADDRESS BUS
-    rand bit  [ID_WIDTH:0]        awid;          // [3:0] in AXI 3 and [7:0] in AXI 4
-    rand bit  [ADDR_WIDTH:0]      awaddr;    
+    rand bit  [ID_WIDTH-1:0]        awid;          // [3:0] in AXI 3 and [7:0] in AXI 4
+    rand bit  [ADDR_WIDTH-1:0]      awaddr;    
     rand bit  [3:0]        awlen;
     rand bit  [2:0]        awsize;
     rand burst_type    awburst;
@@ -29,9 +29,9 @@ class transaction extends uvm_sequence_item;
 
     
     //WRITE DATA BUS
-    rand bit  [ID_WIDTH:0]        wid;  
-    rand bit  [DATA_WIDTH:0]       wdata;
-    rand  bit  [STRB_WIDTH:0]        wstrb;
+    rand bit  [ID_WIDTH-1:0]        wid;  
+    rand bit  [DATA_WIDTH-1:0]       wdata;
+    rand  bit  [STRB_WIDTH-1:0]        wstrb;
     bit                wlast;
     bit               wvalid;
     bit                wready;
@@ -44,8 +44,8 @@ class transaction extends uvm_sequence_item;
     bit               bready;
     
     //READ ADDRESS BUS
-    rand bit  [ID_WIDTH:0]        arid;
-    rand bit  [ADDR_WIDTH:0]       araddr;
+    rand bit  [ID_WIDTH-1:0]        arid;
+    rand bit  [ADDR_WIDTH-1:0]       araddr;
     rand bit  [7:0]        arlen;
     rand bit  [2:0]        arsize;
     rand burst_type      arburst;
@@ -58,21 +58,24 @@ class transaction extends uvm_sequence_item;
    
     
     //READ DATA BUS
-    rand  bit  [ID_WIDTH:0]             rid;
-    bit  [DATA_WIDTH:0]            rdata;
+    rand  bit  [ID_WIDTH-1:0]             rid;
+    bit  [DATA_WIDTH-1:0]            rdata;
     resp_type            rresp;
     bit                    rlast;
     bit                    rvalid;
     bit               rready;
 
     //QUEUE DECLARATIONS
-    bit [ADDR_WIDTH:0] awaddr_q[$];
-    bit [ADDR_WIDTH:0] araddr_q[$];
-    bit [DATA_WIDTH:0] wdata_q[$];
-    bit [DATA_WIDTH:0] wstrb_q[$]; 
-    bit [DATA_WIDTH:0] rdata_q[$];
+    bit [ADDR_WIDTH-1:0] awaddr_q[$];
+    bit [ADDR_WIDTH-1:0] araddr_q[$];
+    bit [DATA_WIDTH-1:0] wdata_q[$];
+    bit [DATA_WIDTH-1:0] wstrb_q[$]; 
+    bit [DATA_WIDTH-1:0] rdata_q[$];
   	bit         [1:0]  rresp_q[$];
   
+    // Transaction local signals
+    bit [`ADDR_BUS_WIDTH-1:0] wrap_lower_addr;
+    bit [`ADDR_BUS_WIDTH-1:0] wrap_upper_addr;
   
   // CONSTRAINTS
   
@@ -130,7 +133,28 @@ function bit [ BUS_LENGTH/8 -1 : 0 ] calc_start_lane( bit [ADDR_WIDTH:0] awaddr,
 endfunction
 
 
+function void calculate_wrap_range(input bit [ADDR_BUS_WIDTH-1:0] addr, bit [3:0] len, bit [3:0] size );
 
+    bit [31:0] tx_size;
+    bit [31:0] offset;
+
+    tx_size = (len + 1) * (2**size);
+    offset = (addr % tx_size);
+
+    wrap_lower_addr = addr - offset;
+    wrap_upper_addr = wrap_lower_addr + tx_size - 1;
+
+    `uvm_info("AXI_TX WRAP CALC", $sformatf(" addr = %h", addr), UVM_MEDIUM);
+    `uvm_info("AXI_TX WRAP CALC", $sformatf(" wrap_lower_addr = %h ", wrap_lower_addr), UVM_MEDIUM);
+    `uvm_info("AXI_TX WRAP CALC", $sformatf(" wrap_upper_addr = %h ", wrap_upper_addr), UVM_MEDIUM);
+
+endfunction
+
+function void check_wrap(input [ADDR_WIDTH-1:0] addr);
+    if(addr >= wrap_upper_addr) begin
+        addr = wrap_lower_addr;
+    end
+endfunction
   
 
 
@@ -197,6 +221,8 @@ endfunction
    endfunction
 
 endclass
+
+
 
 `endif
 

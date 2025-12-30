@@ -67,10 +67,9 @@ function void write_to_mem( bit [ ADDR_WIDTH : 0 ] addr, [ DATA_WIDTH : 0 ] wdat
 // if(wstrb[3]) begin
 		// mem[addr+3] = wdata[31:24];
 	
-	
+
 	foreach(wstrb[i])
-  
-      if(wstrb[i]) mem[addr+i]=  wdata[i*8 +: 8]; //wdata[(i*8 + 8 - 1) : (i*8)]
+      if(wstrb[i]) mem[addr++]=  wdata[i*8 +: 8]; //wdata[(i*8 + 8 - 1) : (i*8)]
 
 endfunction
 
