@@ -93,12 +93,12 @@ class iMonitor extends uvm_monitor;
 
                   INCR: begin		
                       tr.awaddr_q.push_back(next_starting_addr);
-                      next_starting_addr =  incr_addr_calc(next_starting_addr, tr.wstrb);
+                      next_starting_addr =  incr_addr_calc(next_starting_addr, tr.awsize);
                   end
 
                   WRAP: begin
                       tr.awaddr_q.push_back(next_starting_addr);
-                      next_starting_addr =  incr_addr_calc(next_starting_addr, tr.wstrb);
+                      next_starting_addr =  incr_addr_calc(next_starting_addr, tr.awsize);
                       tr.check_wrap(next_starting_addr)
                   end
 
@@ -126,12 +126,14 @@ class iMonitor extends uvm_monitor;
 
 
 
-    function bit[31:0]  incr_addr_calc(bit [31:0] addr, bit [STRB_WIDTH-1:0] wstrb);
-      int count = 0
-      int lane;
-      int offset;
-      count = $countones(wstrb)
-      return addr + count;
+    function bit[31:0]  incr_addr_calc(bit [31:0] addr, bit [1:0] size);
+      // int count = 0
+      // int lane;
+      // int offset;
+      // count = $countones(wstrb)
+      // return addr + count;
+      addr = addr + 2**size;
+      return addr;
     endfunction
 
     task wvalid_timeout(input int i);
