@@ -45,10 +45,10 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 	
 			if(!ref_pkt.bresp)  begin
 			
-			foreach(ref_pkt.awaddr_q[i])
-				write_to_mem(ref_pkt.awaddr_q[i],ref_pkt.wstrb_q[i],ref_pkt.wdata_q[i]);
-			
-			end
+				foreach(ref_pkt.awaddr_q[i])
+					write_to_mem(ref_pkt.awaddr_q[i],ref_pkt.wstrb_q[i],ref_pkt.wdata_q[i]);
+				
+				end
 	
 			//display error had occurred  with corresponding code
 			else                        
@@ -117,7 +117,7 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 	function void report_phase (uvm_phase phase);
 		`uvm_info("SCB",$sformatf("Scoreboard completed with matches=%0d mismatches=%0d",num_matches,num_mismatches),UVM_NONE);
 	endfunction
-	
+
 endclass
 
 
