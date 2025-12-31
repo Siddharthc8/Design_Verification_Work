@@ -102,15 +102,12 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 				end
 
 			end 
-			
+
 		end  
 
 		else  `uvm_error("SCB_RRESP", $sformatf(" Beat with addr %0h is erroneous ", addr ) );
 				
 	endfunction
-
-
-	
 
 	virtual function void extract_phase(uvm_phase phase);
 		uvm_config_db #(int)::set(null,"uvm_test_top.env","num_matches",num_matches);
