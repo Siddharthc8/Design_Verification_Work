@@ -85,9 +85,9 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 
 	// Comparing the values address by address
 	//   function void compare ( bit [ ADDR_WIDTH - 1 : 0 ] addr, [ DATA_WIDTH - 1: 0 ] rdata, [2:0] arsize, [ 1 : 0 ] rresp );
-		function void compare ( bit [ ADDR_WIDTH - 1 : 0 ] addr, [ DATA_WIDTH - 1: 0 ] rdata, [2:0] arsize, [ 1 : 0 ] rresp );
+	function void compare ( bit [ ADDR_WIDTH - 1 : 0 ] addr, [ DATA_WIDTH - 1: 0 ] rdata, [2:0] arsize, [ 1 : 0 ] rresp );
 		
-			if( !rresp || rresp = 2'b01)  begin
+		if( !rresp || rresp = 2'b01)  begin
 
 			for( bit[2:0] j = 0; j < (1 << arsize) ; j++)   begin
 
