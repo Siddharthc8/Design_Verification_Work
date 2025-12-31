@@ -63,7 +63,7 @@ class iMonitor extends uvm_monitor;
           if(tr.burst_type == WRAP)
             tr.calculate_wrap_range(tr.awaddr, tr.awlen, tr.awsize);
 
-        `uvm_info(get_type_name(), $sformatf(" End of waddr channel "), UVM_MEDIUM);
+        `uvm_info(get_type_name(), $sformatf(" End of write addr channel "), UVM_MEDIUM);
 
     //----------------------------------------------------------------------------------------//
     //                                 WRITE DATA CHANNEL                                       
@@ -84,29 +84,32 @@ class iMonitor extends uvm_monitor;
                 tr.wvalid = vif.cb_mon.wvalid;
                 tr.wdata  = vif.cb_mon.wdata;
                 tr.wstrb  = vif.cb_mon.wstrb;
+                tr.wdata_q.push_back(tr.wdata);
 
                 if(i == tr.awlen) begin
-                      tr.wlast = vif.cb_mon.wlast;
+                    tr.wlast = vif.cb_mon.wlast;
                 end
 
                 case(tr.awburst)
 
                   INCR: begin		
                       tr.awaddr_q.push_back(next_starting_addr);
+                      // tr.awaddr_q.push_back( tr.awaddr + i*(1<< tr.awsize) ); //0,awsize=1 -> 0,2,4
                       next_starting_addr =  incr_addr_calc(next_starting_addr, tr.awsize);
                   end
 
                   WRAP: begin
                       tr.awaddr_q.push_back(next_starting_addr);
+                      // tr.awaddr_q.push_back( tr.awaddr + i*(1<< tr.awsize) ); //0,awsize=1 -> 0,2,4
                       next_starting_addr =  incr_addr_calc(next_starting_addr, tr.awsize);
-                      tr.check_wrap(next_starting_addr)
+                      tr.check_wrap(next_starting_addr);
                   end
 
                 endcase
 
             end
 
-              `uvm_info(get_type_name(), $sformatf(" End of wdata channel "), UVM_MEDIUM);
+            `uvm_info(get_type_name(), $sformatf(" End of wdata channel "), UVM_MEDIUM);
 
       //----------------------------------------------------------------------------------------//
       //                                 WRITE RESPONSE CHANNEL                                  
@@ -116,7 +119,6 @@ class iMonitor extends uvm_monitor;
           tr.bresp=vif.cb_mon.bresp;
               `uvm_info(get_type_name(), $sformatf(" End of bresp channel "), UVM_LOW);
 
-
           analysis_port.write(tr);
           `uvm_info( get_type_name(), $sformatf(" Send tr to scoreboard from iMonitor "), UVM_MEDIUM);
 
@@ -125,13 +127,7 @@ class iMonitor extends uvm_monitor;
     endtask
 
 
-
-    function bit[31:0]  incr_addr_calc(bit [31:0] addr, bit [1:0] size);
-      // int count = 0
-      // int lane;
-      // int offset;
-      // count = $countones(wstrb)
-      // return addr + count;
+    function bit[ADDR_WIDTH:0]  incr_addr_calc(bit [ADDR_WIDTH:0] addr, bit [1:0] size);
       addr = addr + 2**size;
       return addr;
     endfunction

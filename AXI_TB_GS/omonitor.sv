@@ -4,6 +4,7 @@ class oMonitor extends uvm_monitor;
     virtual axi_intf vif;
     uvm_analysis_port #(transaction) analysis_port;
     transaction tr;
+    bit[ADDR_WIDTH-1:0] next_starting_addr;
 
     function new(string name="iMonitor",uvm_component parent);
         super.new(name,parent);
@@ -13,104 +14,128 @@ class oMonitor extends uvm_monitor;
     extern virtual task run_phase(uvm_phase phase);
     extern virtual task read_channel();
 //     extern virtual task write();
+    extern virtual task rvalid_timeout(input int i);
+    extern virtual task rready_timeout(input int i);
 
 endclass
       
       
 
-      function void oMonitor::build_phase(uvm_phase phase);
-        super.build_phase(phase);
-        
-            analysis_port = new( "analysis_port", this );
-        	if(!uvm_config_db #(virtual axi_intf) :: get(this,"","VIF",vif)) 
-              `uvm_fatal(get_type_name(),"oMonitor DUT interface not set");
-        
-      endfunction
+    function void oMonitor::build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    
+        analysis_port = new( "analysis_port", this );
+        if(!uvm_config_db #(virtual axi_intf) :: get(this,"","VIF",vif)) 
+            `uvm_fatal(get_type_name(),"oMonitor DUT interface not set");
+    
+    endfunction
 
-      task oMonitor::run_phase(uvm_phase phase);
-        super.run_phase(phase);
-            forever begin
-              @(vif.cb_mon);
-              read_channel();		
-            end	
-      endtask
+    task oMonitor::run_phase(uvm_phase phase);
+    super.run_phase(phase);
+        forever begin
+            @(vif.cb_mon);
+            read_channel();		
+        end	
+    endtask
 
-      task oMonitor::read_channel();
+    task oMonitor::read_channel();
 
-            //ADDR READ CHANNEL
-            wait (vif.cb_mon.arvalid == 1) ;
+//-----------------------------------------------------------//
+//                  ADDR READ CHANNEL           
+//-----------------------------------------------------------//
 
-            tr = transaction::type_id::create("tr");
+        wait (vif.cb_mon.arvalid == 1) ;
 
-            tr.arid    = vif.cb_mon.arid;
-            tr.araddr  = vif.cb_mon.araddr;
-            tr.arlen   = vif.cb_mon.arlen;
-            tr.arsize  = vif.cb_mon.arsize;
-            tr.arburst = vif.cb_mon.arburst;
-            tr.arlock  = vif.cb_mon.arlock;
-            tr.arcache = vif.cb_mon.arcache;
-            tr.arprot  = vif.cb_mon.arprot;
-            tr.arvalid = vif.cb_mon.arvalid;
+        tr = transaction::type_id::create("tr");
 
-        	`uvm_info(get_type_name(), "Waiting for arready and arvalid", UVM_LOW);
-        	wait(vif.cb_mon.arready == 1  && vif.cb_mon.arvalid == 1);	
-            tr.araddr_q.delete();
+        tr.arid    = vif.cb_mon.arid;
+        tr.araddr  = vif.cb_mon.araddr;
+        tr.arlen   = vif.cb_mon.arlen;
+        tr.arsize  = vif.cb_mon.arsize;
+        tr.arburst = vif.cb_mon.arburst;
+        tr.arlock  = vif.cb_mon.arlock;
+        tr.arcache = vif.cb_mon.arcache;
+        tr.arprot  = vif.cb_mon.arprot;
+        tr.arvalid = vif.cb_mon.arvalid;
+
+        next_starting_addr = tr.araddr;
+
+        `uvm_info(get_type_name(), "Waiting for arready and arvalid", UVM_LOW);
+        wait(vif.cb_mon.arvalid == 1  && vif.cb_mon.arready == 1);	
+        tr.araddr_q.delete();
 
 
-            //DATA READ CHANNEL
+//-----------------------------------------------------------//
+//                  DATA READ CHANNEL           
+//-----------------------------------------------------------//
 
-        for(int i=0;i <=tr.arlen;i++) begin //monitor till rlast comes
+    for(int i=0;i <=tr.arlen;i++) begin //monitor till rlast comes
 
-                    // Wait for WVALID first (with timeout)
-                    fork
-                        begin
-                            wait (vif.cb_mon.rvalid == 1);
-                        end
-                        begin
-                            repeat(RVALID_TIMEOUT) @(vif.cb_mon);
-                            `uvm_fatal(get_type_name(), $sformatf("Timeout waiting for RVALID on beat %0d", i))
-                        end
-                    join_any
-                    disable fork;
+        // Wait for WVALID first (with timeout)
+        rvalid_timeout(i);
 
-                    `uvm_info(get_type_name(), $sformatf("RVALID asserted for beat %0d, waiting for RREADY", i), UVM_LOW);
+        // Wait for wready (with timeout)
+        rready_timeout(i);
 
-                    // Wait for rready (with timeout)
-                    fork
-                        begin
-                            wait (vif.cb_mon.rvalid == 1 && vif.cb_mon.rready == 1);
-                        end
-                        begin
-                            repeat(RREADY_TIMEOUT) @(vif.cb_mon);
-                            `uvm_error(get_type_name(), $sformatf("Timeout: RREADY never asserted for beat %0d", i))
-                        end
-                    join_any
-                    disable fork;
+        // Check if handshake actually completed
+        if (vif.cb_mon.rvalid == 1 && vif.cb_mon.rready == 1) begin
+            // Sample all signals at handshake
+            tr.rvalid = vif.cb_mon.rvalid;
+            tr.rdata  = vif.cb_mon.rdata;
+            tr.rresp_q.push_back(vif.cb_mon.rresp);
+            if(i == tr.arlen) 
+                tr.rlast = vif.cb_mon.rlast;
+            case(tr.arburst)
+                INCR: begin		
+                    tr.araddr_q.push_back( tr.araddr + i*(1<< tr.arsize) ); //0,arsize=1 -> 0,2,4
+                end
+                WRAP: begin
+                    tr.araddr_q.push_back(next_starting_addr);
+                    // tr.awaddr_q.push_back( tr.awaddr + i*(1<< tr.awsize) ); //0,awsize=1 -> 0,2,4
+                    next_starting_addr =  incr_addr_calc(next_starting_addr, tr.arsize);
+                    tr.check_wrap(next_starting_addr);
+                end
+            endcase
+        end
 
-                    // Check if handshake actually completed
-                    if (vif.cb_mon.rvalid == 1 && vif.cb_mon.rready == 1) begin
-                        // Sample all signals at handshake
-                        tr.rvalid = vif.cb_mon.rvalid;
-                        tr.rdata  = vif.cb_mon.rdata;
-                      tr.rresp_q.push_back(vif.cb_mon.rresp);
-                        if(i == tr.arlen) 
-                            tr.rlast = vif.cb_mon.rlast;
-                    case(tr.arburst)
-                    INCR: begin		
-                        tr.araddr_q.push_back( tr.araddr + i*(1<< tr.arsize) ); //0,arsize=1 -> 0,2,4
-                                    end
-                                WRAP: begin
-                                        //….
-                                    end
-                        endcase
-                        end
+        analysis_port.write(tr);
+        `uvm_info( get_type_name(), $sformatf(" Send tr to scoreboard from iMonitor "), UVM_MEDIUM);
+    end
+                    
+    endtask
 
-                    analysis_port.write(tr);
-                      `uvm_info( get_type_name(), $sformatf(" Send tr to scoreboard from iMonitor "), UVM_MEDIUM);
-            end
-                      
-      endtask
+    function bit[ADDR_WIDTH:0]  incr_addr_calc(bit [ADDR_WIDTH:0] addr, bit [1:0] size);
+        addr = addr + 2**size;
+        return addr;
+    endfunction
 
+    task oMonitor::rvalid_timeout(input int i);
+    fork
+        begin
+            wait (vif.cb_mon.rvalid == 1);
+        end
+        begin
+            repeat(RVALID_TIMEOUT) @(vif.cb_mon);
+            `uvm_fatal(get_type_name(), $sformatf("Timeout waiting for RVALID on beat %0d", i))
+        end
+    join_any
+    disable fork;
+
+    `uvm_info(get_type_name(), $sformatf("RVALID asserted for beat %0d, waiting for RREADY", i), UVM_LOW);
+    endtask
+
+    task oMonitor::rready_timeout(input int i);
+    fork
+        begin
+            wait (vif.cb_mon.rvalid == 1 && vif.cb_mon.rready == 1);
+        end
+        begin
+            repeat(RREADY_TIMEOUT) @(vif.cb_mon);
+            `uvm_error(get_type_name(), $sformatf("Timeout: RREADY never asserted for beat %0d", i))
+        end
+    join_any
+    disable fork;
+    endtask
 
 
 
