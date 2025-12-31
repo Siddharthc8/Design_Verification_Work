@@ -47,12 +47,21 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 		
 			foreach(ref_pkt.awaddr_q[i])
 				write_to_mem(ref_pkt.awaddr_q[i],ref_pkt.wstrb_q[i],ref_pkt.wdata_q[i]);
-			
 			end
 
 		//display error had occurred  with corresponding code
 		else                        
 			`uvm_info( "SCB_INP", $sformatf( "BRESP: %0s", ref_pkt.bresp.name ), UVM_NONE );
+		
+	endfunction
+
+	virtual function void write_out(T pkt);
+
+		$cast( act_pkt, pkt.clone() );
+
+		foreach( act_pkt.araddr_q[i] ) begin
+			compare( act_pkt.araddr_q[i], act_pkt.rdata_q[i], act_pkt.arsize[i], act_pkt.rresp_q[i] );
+		end            			               
 		
 	endfunction
 
@@ -78,7 +87,7 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 	//   function void compare ( bit [ ADDR_WIDTH - 1 : 0 ] addr, [ DATA_WIDTH - 1: 0 ] rdata, [2:0] arsize, [ 1 : 0 ] rresp );
 		function void compare ( bit [ ADDR_WIDTH - 1 : 0 ] addr, [ DATA_WIDTH - 1: 0 ] rdata, [2:0] arsize, [ 1 : 0 ] rresp );
 		
-			if( !rresp )  begin
+			if( !rresp || rresp = 2'b01)  begin
 
 			for( bit[2:0] j = 0; j < (1 << arsize) ; j++)   begin
 
@@ -99,15 +108,7 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 	endfunction
 
 
-	virtual function void write_out(T pkt);
-
-		$cast( act_pkt, pkt.clone() );
-
-		foreach( act_pkt.araddr_q[i] ) begin
-			compare( act_pkt.araddr_q[i], act_pkt.rdata_q[i], act_pkt.arsize[i], act_pkt.rresp_q[i] );
-		end            			               
-		
-	endfunction
+	
 
 	virtual function void extract_phase(uvm_phase phase);
 		uvm_config_db #(int)::set(null,"uvm_test_top.env","num_matches",num_matches);
