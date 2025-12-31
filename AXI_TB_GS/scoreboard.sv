@@ -40,19 +40,19 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 
 	virtual function void write_in(T pkt);
 	
-			$cast( ref_pkt, pkt.clone() );
-			//	`uvm_info("SCB_INP",$sformatf("ADDR: %0p,Expected::%0p",pkt.awaddr_arr,pkt.wdata_arr),UVM_NONE);
-	
-			if(!ref_pkt.bresp)  begin
+		$cast( ref_pkt, pkt.clone() );
+		//	`uvm_info("SCB_INP",$sformatf("ADDR: %0p,Expected::%0p",pkt.awaddr_arr,pkt.wdata_arr),UVM_NONE);
+
+		if(!ref_pkt.bresp)  begin
+		
+			foreach(ref_pkt.awaddr_q[i])
+				write_to_mem(ref_pkt.awaddr_q[i],ref_pkt.wstrb_q[i],ref_pkt.wdata_q[i]);
 			
-				foreach(ref_pkt.awaddr_q[i])
-					write_to_mem(ref_pkt.awaddr_q[i],ref_pkt.wstrb_q[i],ref_pkt.wdata_q[i]);
-				
-				end
-	
-			//display error had occurred  with corresponding code
-			else                        
-				`uvm_info( "SCB_INP", $sformatf( "BRESP: %0s", ref_pkt.bresp.name ), UVM_NONE );
+			end
+
+		//display error had occurred  with corresponding code
+		else                        
+			`uvm_info( "SCB_INP", $sformatf( "BRESP: %0s", ref_pkt.bresp.name ), UVM_NONE );
 		
 	endfunction
 
