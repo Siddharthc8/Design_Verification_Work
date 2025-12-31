@@ -100,8 +100,10 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 					`uvm_error("SCB_DATA_MISMATCH",$sformatf("For addr = %0d, expected data %0h is mismatching  with recvd data %0h ",addr+j, mem[addr+j], rdata[j*8 +: 8  ]));
 					++ num_mismatches;
 				end
+
 			end 
-			end  
+			
+		end  
 
 		else  `uvm_error("SCB_RRESP", $sformatf(" Beat with addr %0h is erroneous ", addr ) );
 				
