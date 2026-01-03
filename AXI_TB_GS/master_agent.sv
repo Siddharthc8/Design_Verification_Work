@@ -1,16 +1,17 @@
 class master_agent extends uvm_agent;
-	`uvm_component_utils(master_agent)
-	 driver drvr;
+`uvm_component_utils(master_agent)
+	driver drvr;
     iMonitor iMon;
-	 sequencer seqr;
+	sequencer seqr;
 	 
- uvm_analysis_port #(transaction) ap;
+ 	uvm_analysis_port #(transaction) ap;
+	
 	function new(string name="master_agent",uvm_component parent);
-		super.new(name,parent);
+	super.new(name,parent);
 	endfunction
 	
 	function void build_phase(uvm_phase phase);
-		super.build_phase(phase);
+	super.build_phase(phase);
 	ap=new("ap",this);
 		if(is_active==UVM_ACTIVE) begin
 			seqr=sequencer::type_id::create("seqr",this);
@@ -20,9 +21,9 @@ class master_agent extends uvm_agent;
 	endfunction
 	
 	function void connect_phase(uvm_phase phase);
-		super.connect_phase(phase);
+	super.connect_phase(phase);
 		if(is_active==UVM_ACTIVE) 
-          drvr.seq_item_port.connect(seqr.seq_item_export);
+          	drvr.seq_item_port.connect(seqr.seq_item_export);
         iMon.analysis_port.connect(this.ap);
 	endfunction
 

@@ -63,7 +63,7 @@ virtual  axi_intf  vif;
                 read_address(tr);
                 read_data(tr);
             end
-          join_any
+          join
       disable fork;
 
     endtask

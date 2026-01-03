@@ -3,7 +3,7 @@
 
 typedef enum { UNKNOWN, RESET, STIMULUS } pkt_kind;
 typedef enum { WRITE, READ } oper_type;
-typedef enum { FIXED, INCR, WRAP } burst_type;
+typedef enum { FIXED, INCR, WRAP, RSVD } burst_type;
 typedef enum { OKAY, EXOKAY, SLVERR, DECERR } resp_type;
 
 class transaction extends uvm_sequence_item;
@@ -66,12 +66,10 @@ class transaction extends uvm_sequence_item;
     bit               rready;
 
     //QUEUE DECLARATIONS
-    bit [ADDR_WIDTH-1:0] awaddr_q[$];
-    bit [ADDR_WIDTH-1:0] araddr_q[$];
-    bit [DATA_WIDTH-1:0] wdata_q[$];
-    bit [DATA_WIDTH-1:0] wstrb_q[$]; 
-    bit [DATA_WIDTH-1:0] rdata_q[$];
-  	bit         [1:0]  rresp_q[$];
+    bit [DATA_WIDTH-1:0] wdataQ[$];
+    bit [DATA_WIDTH-1:0] wstrbQ[$]; 
+    bit [DATA_WIDTH-1:0] rdataQ[$];
+  	bit         [1:0]  rrespQ[$];
   
     // Transaction local signals
     bit [`ADDR_BUS_WIDTH-1:0] wrap_lower_addr;
@@ -87,16 +85,16 @@ class transaction extends uvm_sequence_item;
     constraint burst_c{soft awburst==INCR;}               
     constraint len_c{soft awlen==arlen;}                       // —--> TEMP
     constraint addr_c{
-                              soft awaddr inside {[100:200]};
-      						  soft araddr inside {[100:200]};
+                        soft awaddr inside {[100:200]};
+                        soft araddr inside {[100:200]};
         }
     constraint unaligned_addr{awaddr% 2**(awsize)!=0;}
     constraint aligned_addr{awaddr%(1<< awsize)==0;}     // Note “1<<size” equivalent to “2^size”
 
     // constraint strobe_c { solve awsize before wstrb; 
                         // soft wstrb inside { [ 0: ( 1 << ( 1 << awsize ) -1) ] };
-// $countones(wstrb) <= 1<< awsize; 
-// }
+    // $countones(wstrb) <= 1<< awsize; 
+    // }
 
     constraint addr_valid {
 				awaddr %(1<< awsize)==0;
@@ -173,7 +171,7 @@ endfunction
    `uvm_field_int(awprot,UVM_ALL_ON)
    `uvm_field_int(awvalid,UVM_ALL_ON)
    `uvm_field_int(awready,UVM_ALL_ON)
-   `uvm_field_queue_int(awaddr_q,UVM_ALL_ON)
+   `uvm_field_queue_int(awaddrQ,UVM_ALL_ON)
 
    //WRITE DATA BUS
    `uvm_field_int(wid,UVM_ALL_ON)
@@ -182,8 +180,8 @@ endfunction
    `uvm_field_int(wlast,UVM_ALL_ON)
    `uvm_field_int(wvalid,UVM_ALL_ON)
    `uvm_field_int(wready,UVM_ALL_ON)
-   `uvm_field_queue_int(wdata_q,UVM_ALL_ON)
-   `uvm_field_queue_int(wstrb_q,UVM_ALL_ON)
+   `uvm_field_queue_int(wdataQ,UVM_ALL_ON)
+   `uvm_field_queue_int(wstrbQ,UVM_ALL_ON)
 
    //WRITE RESPONSE BUS
    `uvm_field_int(bid,UVM_ALL_ON)
@@ -202,7 +200,7 @@ endfunction
    `uvm_field_int(arprot,UVM_ALL_ON)
    `uvm_field_int(arvalid,UVM_ALL_ON)
    `uvm_field_int(arready,UVM_ALL_ON)
-   `uvm_field_queue_int(araddr_q,UVM_ALL_ON)
+   `uvm_field_queue_int(araddrQ,UVM_ALL_ON)
 
    //READ DATA BUS
    `uvm_field_int(rid,UVM_ALL_ON)
@@ -211,8 +209,8 @@ endfunction
    `uvm_field_int(rlast,UVM_ALL_ON)
    `uvm_field_int(rvalid,UVM_ALL_ON)
    `uvm_field_int(rready,UVM_ALL_ON)
-  `uvm_field_queue_int(rdata_q,UVM_ALL_ON)
-  `uvm_field_queue_int(rresp_q,UVM_ALL_ON)
+  `uvm_field_queue_int(rdataQ,UVM_ALL_ON)
+  `uvm_field_queue_int(rrespQ,UVM_ALL_ON)
    
    `uvm_object_utils_end
 
