@@ -122,6 +122,34 @@ interface axi_intf(input clk);
 //     modport tb_mon(clocking cb_mon);
 
 
+    // Clocking Block for RESPONDER
+    clocking slave_cb @(posedge clk);
+
+    default input #0 output #1;
+
+    //--> Write Address Channel:-
+    input  awid, awaddr, awlen, awsize, awburst, awlock, awcache, awprot, awvalid;
+    output awready;
+
+    //--> Write Data Channel:-
+    input  wid, wdata, wstrb, wlast, wvalid;
+    output wready;
+
+    //--> Write Respose Channel:-
+    output  bid, bresp, bvalid;
+    input bready;
+
+    //--> Read Address Channel:-
+    input  arid, araddr, arlen, arsize, arburst, arlock, arcache, arprot, arvalid;
+    output arready;
+    
+    //--> Read Data Channel:-
+    output  rid, rdata, rresp, rlast, rvalid;
+    input rready;
+
+    endclocking
+
+
 endinterface
 
 

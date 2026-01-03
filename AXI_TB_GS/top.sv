@@ -8,6 +8,7 @@ import uvm_pkg::*;
 `include "sequencer.sv"
 `include "driver.sv"
 `include "imonitor.sv"
+`include "responder.sv"
 `include "master_agent.sv"
 `include "omonitor.sv"
 `include "slave_agent.sv"

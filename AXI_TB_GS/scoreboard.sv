@@ -47,7 +47,7 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 
 		if(!ref_pkt.bresp || ref_pkt.bresp == 2'b01)  begin
 			
-			ref_pkt.calculate_wrap_range();
+			ref_pkt.calculate_wrap_range(ref_pkt.awaddr, ref_pkt.awlen, ref_pkt.awsize);
 
 			foreach(ref_pkt.wdataQ[i]) begin
 				write_to_mem(ref_pkt.awaddr, ref_pkt.awsize, ref_pkt.wdataQ[i],ref_pkt.wstrbQ[i]);
@@ -83,6 +83,8 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 
 		$cast( act_pkt, pkt.clone() );
 
+		act_pkt.calculate_wrap_range(act_pkt.awaddr, act_pkt.awlen, act_pkt.awsize);
+
 		foreach( act_pkt.rdataQ[i] ) begin
 			compare( act_pkt.araddr, act_pkt.rdataQ[i], act_pkt.arsize, act_pkt.rrespQ[i] );
 
@@ -98,7 +100,7 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 
 				WRAP: begin
 					act_pkt.araddr += 2**act_pkt.arsize;
-					act_pkt.check_wrap(act_pkt.araddr);
+					act_pkt.araddr = act_pkt.check_wrap(act_pkt.araddr);
 				end
 
             endcase
