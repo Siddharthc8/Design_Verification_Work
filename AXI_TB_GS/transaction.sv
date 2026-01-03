@@ -72,8 +72,8 @@ class transaction extends uvm_sequence_item;
   	bit         [1:0]  rrespQ[$];
   
     // Transaction local signals
-    bit [`ADDR_BUS_WIDTH-1:0] wrap_lower_addr;
-    bit [`ADDR_BUS_WIDTH-1:0] wrap_upper_addr;
+    bit [ADDR_WIDTH-1:0] wrap_lower_addr;
+    bit [ADDR_WIDTH-1:0] wrap_upper_addr;
   
   // CONSTRAINTS
   
@@ -131,7 +131,7 @@ function bit [ BUS_LENGTH/8 -1 : 0 ] calc_start_lane( bit [ADDR_WIDTH:0] awaddr,
 endfunction
 
 
-function void calculate_wrap_range(input bit [ADDR_BUS_WIDTH-1:0] addr, bit [3:0] len, bit [3:0] size );
+function void calculate_wrap_range(input bit [ADDR_WIDTH-1:0] addr, bit [3:0] len, bit [3:0] size );
 
     bit [31:0] tx_size;
     bit [31:0] offset;
@@ -148,7 +148,7 @@ function void calculate_wrap_range(input bit [ADDR_BUS_WIDTH-1:0] addr, bit [3:0
 
 endfunction
 
-function void check_wrap(input [ADDR_WIDTH-1:0] addr);
+function bit [ADDR_WIDTH-1:0] check_wrap(input [ADDR_WIDTH-1:0] addr);
     if(addr >= wrap_upper_addr) begin
         addr = wrap_lower_addr;
     end
@@ -172,7 +172,6 @@ endfunction
    `uvm_field_int(awprot,UVM_ALL_ON)
    `uvm_field_int(awvalid,UVM_ALL_ON)
    `uvm_field_int(awready,UVM_ALL_ON)
-   `uvm_field_queue_int(awaddrQ,UVM_ALL_ON)
 
    //WRITE DATA BUS
    `uvm_field_int(wid,UVM_ALL_ON)
@@ -201,7 +200,6 @@ endfunction
    `uvm_field_int(arprot,UVM_ALL_ON)
    `uvm_field_int(arvalid,UVM_ALL_ON)
    `uvm_field_int(arready,UVM_ALL_ON)
-   `uvm_field_queue_int(araddrQ,UVM_ALL_ON)
 
    //READ DATA BUS
    `uvm_field_int(rid,UVM_ALL_ON)

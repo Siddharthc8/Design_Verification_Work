@@ -30,6 +30,7 @@ interface axi_intf(input clk);
     logic                    awready;
     
     //WRITE DATA BUS
+    logic  [ID_WIDTH-1:0]    wid;
     logic  [DATA_WIDTH-1:0]  wdata;
     logic  [STRB_WIDTH-1:0]  wstrb;
     logic                    wlast;
@@ -74,7 +75,7 @@ interface axi_intf(input clk);
 
       //WRITE DATA BUS
       input wready;
-      output wdata,wstrb,wlast,wvalid;
+      output wid,wdata,wstrb,wlast,wvalid;
        
       //WRITE RESPONSE BUS
       input bid,bresp,bvalid;
@@ -103,7 +104,7 @@ interface axi_intf(input clk);
 
       //WRITE DATA BUS
       input wready;
-      input wdata,wstrb,wlast,wvalid;
+      input wid,wdata,wstrb,wlast,wvalid;
        
       //WRITE RESPONSE BUS
       input bid,bresp,bvalid;

@@ -106,6 +106,7 @@ virtual  axi_intf  vif;
         for(int i = 0; i<=tr.awlen; i++) begin
             
           @(vif.cb);
+          vif.cb.wid        <=     tr.wid;
           vif.cb.wdata        <=     $urandom;
           vif.cb.wstrb        <=     tr.wstrb; 
           // vif.cb.wvalid <= 0;

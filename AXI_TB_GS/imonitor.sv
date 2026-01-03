@@ -57,7 +57,7 @@ class iMonitor extends uvm_monitor;
         tr.awprot  = vif.cb_mon.awprot;
         tr.awvalid = vif.cb_mon.awvalid;
 
-        tr.dataQ.delete();
+        tr.wdataQ.delete();
         tr.wstrbQ.delete();
 
         `uvm_info(get_type_name(), "End of write addr channel", UVM_MEDIUM);
@@ -76,6 +76,7 @@ class iMonitor extends uvm_monitor;
 
             if (vif.cb_mon.wvalid == 1 && vif.cb_mon.wready == 1) begin
 
+                tr.wid   = vif.cb_mon.wid;
                 tr.wdata = vif.cb_mon.wdata;
                 tr.wstrb = vif.cb_mon.wstrb;
 
@@ -106,6 +107,9 @@ class iMonitor extends uvm_monitor;
                 "Send tr to scoreboard from iMonitor",
                 UVM_MEDIUM
             );
+
+            @(vif.cb_mon);
+
         end
     endtask
 

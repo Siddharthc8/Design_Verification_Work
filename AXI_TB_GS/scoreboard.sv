@@ -23,7 +23,7 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 	T ref_pkt;
 	T act_pkt;
 	static bit [31:0] num_matches, num_mismatches;
-	bit [ DATA_WIDTH-1 : 0 ]  mem [ bit [ ADDR_WIDTH - 1 : 0 ] ];              // key - addr,value -data
+	bit [DATA_WIDTH-1:0] mem [bit [ADDR_WIDTH-1:0]];             // key - addr,value -data
 	// bit [ DATA_WIDTH-1 : 0 ]  fifoQ [ bit [ ADDR_WIDTH - 1 : 0 ] ] [$];       // Only for Fixed transaction
 	//               value   arr_name  [ key ]
 
@@ -50,7 +50,7 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 			ref_pkt.calculate_wrap_range(ref_pkt.awaddr, ref_pkt.awlen, ref_pkt.awsize);
 
 			foreach(ref_pkt.wdataQ[i]) begin
-				write_to_mem(ref_pkt.awaddr, ref_pkt.awsize, ref_pkt.wdataQ[i],ref_pkt.wstrbQ[i]);
+				write_to_mem(i, ref_pkt.awaddr, ref_pkt.awsize, ref_pkt.wdataQ[i],ref_pkt.wstrbQ[i]);
 				
 				case(ref_pkt.awburst)
 
@@ -108,13 +108,13 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 		
 	endfunction
 
-	function void write_to_mem( bit [ ADDR_WIDTH : 0 ] addr, bit [2:0] burst_size, bit [ DATA_WIDTH : 0 ] data, bit [ STRB_WIDTH : 0 ] strb);
+	function void write_to_mem( int i, bit [ ADDR_WIDTH : 0 ] addr, bit [2:0] burst_size, bit [ DATA_WIDTH : 0 ] data, bit [ STRB_WIDTH : 0 ] strb);
                 
-		`uvm_info(get_type_name(), $sformatf(" %d Writing at addr = %h, data = %h",i, tr.addr, tr.dataQ[i]), UVM_DEBUG);
 		int lane;
     	int lane_offset;
+		`uvm_info(get_type_name(), $sformatf(" %d Writing at addr = %h, data = %h", i, addr, data), UVM_DEBUG);
 
-		lane_offset = addr % (`DATA_BUS_WIDTH/8);
+		lane_offset = addr % (DATA_WIDTH/8);
 		for (int j = 0; j < (2**burst_size); j++) begin
 			lane = lane_offset + j;
 			if (strb[lane]) begin
@@ -129,7 +129,7 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 	//   function void compare ( bit [ ADDR_WIDTH - 1 : 0 ] addr, [ DATA_WIDTH - 1: 0 ] rdata, [2:0] arsize, [ 1 : 0 ] rresp );
 	function void compare ( bit [ ADDR_WIDTH - 1 : 0 ] addr, [ DATA_WIDTH - 1: 0 ] data, [2:0] burst_size, [ 1 : 0 ] resp );
 		
-		if( !resp || resp = 2'b01)  begin
+		if( !resp || resp == 2'b01)  begin
 
 			for( bit[2:0] j = 0; j < (1 << burst_size); j++)   begin
 
@@ -139,7 +139,7 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 				end
 
 				else  begin 
-					`uvm_error("SCB_DATA_MISMATCH",$sformatf("For addr = %0d, expected data %0h is mismatching  with recvd data %0h ", addr+j, mem[addr+j], data[j*8 +: 8  ]));
+					`uvm_error("SCB_DATA_MISMATCH",$sformatf("For addr = %0d, expected data %0h is mismatching  with recvd data %0h ", addr+j, mem[addr+j], data[j*8 +: 8]));
 					++ num_mismatches;
 				end
 
