@@ -152,6 +152,7 @@ function void check_wrap(input [ADDR_WIDTH-1:0] addr);
     if(addr >= wrap_upper_addr) begin
         addr = wrap_lower_addr;
     end
+    return addr;
 endfunction
   
 

@@ -24,7 +24,8 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 	T act_pkt;
 	static bit [31:0] num_matches, num_mismatches;
 	bit [ DATA_WIDTH-1 : 0 ]  mem [ bit [ ADDR_WIDTH - 1 : 0 ] ];              // key - addr,value -data
-	bit [ DATA_WIDTH-1 : 0 ]  fifoQ [ bit [ ADDR_WIDTH - 1 : 0 ] ] [$];
+	// bit [ DATA_WIDTH-1 : 0 ]  fifoQ [ bit [ ADDR_WIDTH - 1 : 0 ] ] [$];       // Only for Fixed transaction
+	//               value   arr_name  [ key ]
 
 	function new(string name="scoreboard",uvm_component parent);
 		super.new(name,parent);
@@ -44,29 +45,31 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 		$cast( ref_pkt, pkt.clone() );
 		//	`uvm_info("SCB_INP",$sformatf("ADDR: %0p,Expected::%0p",pkt.awaddr_arr,pkt.wdata_arr),UVM_NONE);
 
-		if(!ref_pkt.bresp)  begin
+		if(!ref_pkt.bresp || ref_pkt.bresp == 2'b01)  begin
 			
+			ref_pkt.calculate_wrap_range();
+
 			foreach(ref_pkt.wdataQ[i]) begin
 				write_to_mem(ref_pkt.awaddr, ref_pkt.awsize, ref_pkt.wdataQ[i],ref_pkt.wstrbQ[i]);
 				
 				case(ref_pkt.awburst)
 
 					FIXED: begin
-						fifoQ[ref_pkt.awaddr].push_back(ref_pkt.wdataQ[i]);
 						ref_pkt.awaddr = ref_pkt.awaddr;
 					end
 				
 					INCR: begin		
-						ref_pkt.addr += 2**tx.burst_size;
+						ref_pkt.awaddr += 2**ref_pkt.awsize;
 					end
 
 					WRAP: begin
-						ref_pkt.addr += 2**tx.burst_size;
-						ref_pkt.check_wrap(next_starting_addr);
+						ref_pkt.awaddr += 2**ref_pkt.awsize;
+						ref_pkt.awaddr = ref_pkt.check_wrap(ref_pkt.awaddr);
 					end
 
                 endcase
 			end
+			
 
 		end
 
@@ -80,15 +83,32 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 
 		$cast( act_pkt, pkt.clone() );
 
-		foreach( act_pkt.wdataQ[i] ) begin
-			compare( act_pkt.araddrQ[i], act_pkt.rdataQ[i], act_pkt.arsize[i], act_pkt.rrespQ[i] );
+		foreach( act_pkt.rdataQ[i] ) begin
+			compare( act_pkt.araddr, act_pkt.rdataQ[i], act_pkt.arsize, act_pkt.rrespQ[i] );
+
+			case(act_pkt.arburst)
+
+				FIXED: begin
+					act_pkt.araddr = act_pkt.araddr;
+				end
+			
+				INCR: begin		
+					act_pkt.araddr += 2**act_pkt.arsize;
+				end
+
+				WRAP: begin
+					act_pkt.araddr += 2**act_pkt.arsize;
+					act_pkt.check_wrap(act_pkt.araddr);
+				end
+
+            endcase
 		end            			               
 		
 	endfunction
 
 	function void write_to_mem( bit [ ADDR_WIDTH : 0 ] addr, bit [2:0] burst_size, bit [ DATA_WIDTH : 0 ] data, bit [ STRB_WIDTH : 0 ] strb);
                 
-		// `uvm_info(get_type_name(), $sformatf(" %d Writing at addr = %h, data = %h",i, tr.addr, tr.dataQ[i]), UVM_MEDIUM);
+		`uvm_info(get_type_name(), $sformatf(" %d Writing at addr = %h, data = %h",i, tr.addr, tr.dataQ[i]), UVM_DEBUG);
 		int lane;
     	int lane_offset;
 
@@ -109,7 +129,7 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 		
 		if( !resp || resp = 2'b01)  begin
 
-			for( bit[2:0] j = 0; j < (1 << size); j++)   begin
+			for( bit[2:0] j = 0; j < (1 << burst_size); j++)   begin
 
 				if( mem[addr + j] == data[ j*8 +: 8 ] ) begin
 					`uvm_info("SCB_DATA_MATCH", $sformatf("For addr = %0d, write data is matching  with read data %0h ", addr+j, mem[addr+j]), UVM_MEDIUM);

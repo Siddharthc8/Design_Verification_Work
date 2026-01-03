@@ -110,15 +110,6 @@ class iMonitor extends uvm_monitor;
     endtask
 
 
-    function bit [ADDR_WIDTH:0] incr_addr_calc(
-        bit [ADDR_WIDTH:0] addr,
-        bit [1:0]          size
-    );
-        addr = addr + 2**size;
-        return addr;
-    endfunction
-
-
     task wvalid_timeout(input int i);
         fork
             begin

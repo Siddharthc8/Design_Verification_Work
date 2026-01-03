@@ -62,7 +62,6 @@ endclass
 
         `uvm_info(get_type_name(), "Waiting for arready and arvalid", UVM_LOW);
         wait(vif.cb_mon.arvalid == 1  && vif.cb_mon.arready == 1);	
-        tr.araddrQ.delete();
 
 
 //-----------------------------------------------------------//
@@ -71,10 +70,10 @@ endclass
 
     for(int i=0;i <=tr.arlen;i++) begin //monitor till rlast comes
 
-        // Wait for WVALID first (with timeout)
+        // Wait for RVALID first (with timeout)
         rvalid_timeout(i);
 
-        // Wait for wready (with timeout)
+        // Wait for RREADY (with timeout)
         rready_timeout(i);
 
         // Check if handshake actually completed
@@ -82,26 +81,13 @@ endclass
             // Sample all signals at handshake
             tr.rvalid = vif.cb_mon.rvalid;
             tr.rdata  = vif.cb_mon.rdata;
+
             tr.rrespQ.push_back(vif.cb_mon.rresp);
+            tr.rdataQ.push_back(vif.cb_mon.rdata);
+
             if(i == tr.arlen) 
                 tr.rlast = vif.cb_mon.rlast;
-            case(tr.arburst)
-                
-                FIXED: begin
-                    continue;
-                end
-
-                INCR: begin		
-                    tr.araddrQ.push_back( tr.araddr + i*(1<< tr.arsize) ); //0,arsize=1 -> 0,2,4
-                end
-
-                WRAP: begin
-                    tr.araddrQ.push_back(next_starting_addr);
-                    // tr.awaddrQ.push_back( tr.awaddr + i*(1<< tr.awsize) ); //0,awsize=1 -> 0,2,4
-                    next_starting_addr =  incr_addr_calc(next_starting_addr, tr.arsize);
-                    tr.check_wrap(next_starting_addr);
-                end
-            endcase
+            
         end
 
         analysis_port.write(tr);
@@ -110,10 +96,6 @@ endclass
                     
     endtask
 
-    function bit[ADDR_WIDTH:0]  incr_addr_calc(bit [ADDR_WIDTH:0] addr, bit [1:0] size);
-        addr = addr + 2**size;
-        return addr;
-    endfunction
 
     task oMonitor::rvalid_timeout(input int i);
     fork
