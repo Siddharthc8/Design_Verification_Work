@@ -38,6 +38,14 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 		mon_in = new("mon_in", this);
 		mon_out = new("mon_out", this);
 	endfunction
+
+	virtual task reset_phase(uvm_phase phase);
+		super.reset_phase(phase);
+		mem.delete();
+		num_matches = 0;
+		num_mismatches = 0;
+		`uvm_info(get_type_name(), "Scoreboard memory cleared on reset", UVM_MEDIUM);
+	endtask
 		
 
 	virtual function void write_in(T pkt);
@@ -108,7 +116,7 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 		
 	endfunction
 
-	function void write_to_mem( int i, bit [ ADDR_WIDTH : 0 ] addr, bit [2:0] burst_size, bit [ DATA_WIDTH : 0 ] data, bit [ STRB_WIDTH : 0 ] strb);
+	function void write_to_mem( int i, bit [ ADDR_WIDTH-1 : 0 ] addr, bit [2:0] burst_size, bit [ DATA_WIDTH-1 : 0 ] data, bit [ STRB_WIDTH-1 : 0 ] strb);
                 
 		int lane;
     	int lane_offset;
@@ -127,7 +135,7 @@ class scoreboard #(type T=transaction) extends uvm_scoreboard;
 
 	// Comparing the values address by address
 	//   function void compare ( bit [ ADDR_WIDTH - 1 : 0 ] addr, [ DATA_WIDTH - 1: 0 ] rdata, [2:0] arsize, [ 1 : 0 ] rresp );
-	function void compare ( bit [ ADDR_WIDTH - 1 : 0 ] addr, [ DATA_WIDTH - 1: 0 ] data, [2:0] burst_size, [ 1 : 0 ] resp );
+	function void compare ( bit [ ADDR_WIDTH - 1 : 0 ] addr, bit [ DATA_WIDTH - 1: 0 ] data, bit [2:0] burst_size, bit [ 1 : 0 ] resp );
 		
 		if( !resp || resp == 2'b01)  begin
 

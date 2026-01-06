@@ -7,12 +7,12 @@ parameter WREADY_TIMEOUT = 32;
 parameter RVALID_TIMEOUT = 32;
 parameter RREADY_TIMEOUT  = 32;
 
-parameter DATA_WIDTH = 32;                  // 4 bytes
+parameter DATA_WIDTH = 64;                  // 4 bytes
 parameter ADDR_WIDTH = 16;
-parameter BUS_LENGTH = 32;
+// parameter BUS_LENGTH = 32;
 
 parameter STRB_WIDTH = (DATA_WIDTH/8);
-parameter ID_WIDTH = 8;
+parameter ID_WIDTH = 4;
 parameter BLOCK_SIZE = 32;
 
 
@@ -27,6 +27,16 @@ function new(string name = ""); \
     super.new(name); \
 endfunction
 
+
+class axi_common;
+
+
+static int total_tx_count = 2;
+static int total_beats;
+// static burst_type_t burst_type = INCR;
+// static bit [3:0] burst_len = 4;
+
+endclass //
 
 `endif
 

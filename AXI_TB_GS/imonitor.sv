@@ -30,7 +30,7 @@ class iMonitor extends uvm_monitor;
             @(vif.cb_mon);
             fork
                 write_channel();
-            join_any
+            join
         end
     endtask
 

@@ -9,8 +9,11 @@ typedef enum { OKAY, EXOKAY, SLVERR, DECERR } resp_type;
 class transaction extends uvm_sequence_item;
    
     bit reset;
-    pkt_kind kind;
+    rand pkt_kind kind;
     oper_type oper;
+
+    rand bit wr_en;
+    rand bit rd_en;
 
 
     //WRITE ADDRESS BUS
@@ -20,7 +23,7 @@ class transaction extends uvm_sequence_item;
     rand bit  [2:0]        awsize;
     rand burst_type    awburst;
     bit               awvalid;
-    bit                    awready;
+    bit               awready;
 
     bit                    awlock;
     bit  [3:0]             awcache;
@@ -38,10 +41,10 @@ class transaction extends uvm_sequence_item;
  
     
     //WRITE RESPONSE BUS
-    rand bit  [ID_WIDTH:0]             bid;
+    rand bit  [ID_WIDTH-1:0]             bid;
     resp_type           bresp;
     bit                    bvalid;
-    bit               bready;
+    rand bit               bready;
     
     //READ ADDRESS BUS
     rand bit  [ID_WIDTH-1:0]        arid;
@@ -50,7 +53,7 @@ class transaction extends uvm_sequence_item;
     rand bit  [2:0]        arsize;
     rand burst_type      arburst;
     bit               arvalid;
-    bit                    arready;
+    bit               arready;
 
     bit                    arlock;
     bit  [3:0]             arcache;
@@ -81,14 +84,14 @@ class transaction extends uvm_sequence_item;
     constraint id_cr{//id  inside {[1:15]};
       arid == rid;}
 
-    constraint size_c{ soft awsize==2 && arsize==2;}
+    constraint size_c{ soft awsize<=2 && arsize<=2;}
     constraint burst_c{soft awburst==INCR;}               
-    constraint len_c{soft awlen==arlen;}                       // —--> TEMP
+    // constraint len_c{soft awlen;}                       // —--> TEMP
     constraint addr_c{
                         soft awaddr inside {[100:200]};
                         soft araddr inside {[100:200]};
         }
-    constraint unaligned_addr{awaddr% 2**(awsize)!=0;}
+    // constraint unaligned_addr{awaddr% 2**(awsize)!=0;}
     constraint aligned_addr{awaddr%(1<< awsize)==0;}     // Note “1<<size” equivalent to “2^size”
 
     // constraint strobe_c { solve awsize before wstrb; 
@@ -101,10 +104,14 @@ class transaction extends uvm_sequence_item;
 }
 
 constraint wstrb_starting_lane { 
-  							wstrb == calc_start_lane( awaddr, awsize, BUS_LENGTH/8 );
+  							wstrb == calc_start_lane( awaddr, awsize, DATA_WIDTH/8 );
              }
 
-function bit [ BUS_LENGTH/8 -1 : 0 ] calc_start_lane( bit [ADDR_WIDTH:0] awaddr, bit[2:0] awsize, int bus_length);
+constraint wr_rd_en {
+                            soft wr_en != rd_en;
+}
+
+function bit [ DATA_WIDTH/8 -1 : 0 ] calc_start_lane( bit [ADDR_WIDTH:0] awaddr, bit[2:0] awsize, int bus_length);
 
 // 	int strb_width = bus_length;
     bit [ STRB_WIDTH -1 : 0 ] strb;
@@ -331,7 +338,7 @@ constraint addr_valid {
 				awaddr %(1<< awsize)==0;
 }
 constraint wstrb_starting_lane { 
-					wstrb=calc_start_lane(awaddr,awsize,BUS_LENGTH/8)
+					wstrb=calc_start_lane(awaddr,awsize,DATA_WIDTH/8)
              }
 function bit [$bits(wstrb)-1:0] calc_start_lane( bit [ADDR_WIDTH:0] awaddr, bit[2:0] awsize, int bus_length);
 	bit [$bits(wstrb)-1:0] strb;

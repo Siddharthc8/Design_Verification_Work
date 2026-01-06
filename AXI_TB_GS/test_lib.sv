@@ -2,7 +2,8 @@ class axi_base_test extends uvm_test;
 `uvm_component_utils(axi_base_test)
 
 	environment env;
-    virtual axi_intf vif;
+    
+    // virtual axi_intf vif;
   
     `NEW_COMP
 
@@ -35,41 +36,31 @@ class axi_base_test extends uvm_test;
 
 endclass
 
-class axi_wr_rd_test extends axi_base_test;
-`uvm_component_utils(axi_wr_rd_test)
 
-    reset_sequence                  rst_seq;    
-    aligned_write_fixed_sequence    algd_seq;
 
+class axi_n_wr_rd_test extends axi_base_test;
+`uvm_component_utils(axi_n_wr_rd_test)
+  
+	axi_n_wr_n_rd_seq  wr_rd_seq;
     `NEW_COMP
 
-
-    virtual function void build_phase(uvm_phase phase);
-    super.build_phase(phase);
-        rst_seq = reset_sequence::type_id::create("rst_seq");
-        algd_seq = aligned_write_fixed_sequence::type_id::create("algd_seq");
-        uvm_config_db#(int)::set(this, "*", "WRITE_COUNT", 10);   
-
+    function void build_phase(uvm_phase phase);
+        super.build_phase(phase);
+        uvm_config_db#(int)::set(null, "*", "COUNT", axi_common::total_tx_count);
+        wr_rd_seq = axi_n_wr_n_rd_seq::type_id::create("wr_rd_seq");
     endfunction
 
     task run_phase(uvm_phase phase);
+    super.run_phase(phase);
 
         phase.raise_objection(this);
-        phase.phase_done.set_drain_time(this, 100);
-            rst_seq.start(env.m_agent.seqr);
-            algd_seq.start(env.m_agent.seqr);
+        phase.phase_done.set_drain_time(this, 1500);
+        #10;
+        wr_rd_seq.start(env.m_agent.seqr);
         phase.drop_objection(this);
+
     endtask
 
+endclass //
 
 
-
-endclass
-
-/*
-//  For coverage class
-`uvm_info(get_type_name(), 
-              "\n========================================\n COVERAGE SUMMARY\n========================================", 
-              UVM_LOW)
-
-*/

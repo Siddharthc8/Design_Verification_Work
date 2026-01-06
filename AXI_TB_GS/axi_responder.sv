@@ -27,13 +27,20 @@ class axi_responder extends uvm_component;
     int lane_r;
     // int unsigned base_addr;
 
-    function void build(); //_phase(uvm_phase phase);
-        if(!uvm_config_db#(virtual axi_intf)::get(null, "", "PIF", vif))
+    function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+        if(!uvm_config_db#(virtual axi_intf)::get(null, "", "VIF", vif))
             `uvm_error(get_type_name(), "Interface unable to be retrieved");
     endfunction
 
-    task run(); //_phase(uvm_phase phase);
-        // super.run_phase(phase);
+    virtual task reset_phase(uvm_phase phase);
+        super.reset_phase(phase);
+        mem.delete();
+        `uvm_info(get_type_name(), "Responder memory cleared on reset", UVM_MEDIUM);
+    endtask
+
+    task run_phase(uvm_phase phase);
+        super.run_phase(phase);
 
         `uvm_info(get_type_name(), "Run Phase on Responder tx", UVM_MEDIUM);
 
@@ -144,7 +151,7 @@ class axi_responder extends uvm_component;
 
 
     task write_resp_phase(bit [3:0] id);
-        // @(vif.slave_cb.aclk);
+        // @(vif.slave_cb);
         vif.slave_cb.bid           <=      id;
         vif.slave_cb.bresp         <=      OKAY;
         vif.slave_cb.bvalid        <=      1;
@@ -175,7 +182,7 @@ class axi_responder extends uvm_component;
             
             if( rd_tx.arburst inside {INCR, WRAP, FIXED} ) begin
 
-                lane_offset_r = rd_tx.araddr % (STRB_WIDTH);
+                lane_offset_r = rd_tx.araddr % (DATA_WIDTH/8);
                 rdata = '0;
                 for(int j = 0; j < 2**rd_tx.arsize; j++) begin
                     int lane_r = lane_offset_r + j;
@@ -186,7 +193,7 @@ class axi_responder extends uvm_component;
                 `uvm_info(get_type_name(), $sformatf("Reading to intf at addr = %h, data = %h", rd_tx.araddr, rdata), UVM_MEDIUM);
 
                 if( rd_tx.arburst inside {INCR, WRAP} )
-                    rd_tx.araddr    +=      2**rd_tx.awsize;  
+                    rd_tx.araddr    +=      2**rd_tx.arsize;  
                 if(rd_tx.arburst == WRAP)        
                     rd_tx.araddr = rd_tx.check_wrap(rd_tx.araddr);                                  // Resets the addr to lower_boundary when it reaches the upper boundary
             end
