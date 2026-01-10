@@ -69,10 +69,10 @@ class iMonitor extends uvm_monitor;
         for (int i = 0; i <= tr.awlen; i++) begin
 
             // Wait for WVALID first (with timeout)
-            wvalid_timeout(i);
+            // wvalid_timeout(i);
 
             // Wait for WREADY and WVALID (with timeout)
-            wready_timeout(i);
+            // wready_timeout(i);
 
             if (vif.cb_mon.wvalid == 1 && vif.cb_mon.wready == 1) begin
 

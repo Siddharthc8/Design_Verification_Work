@@ -96,10 +96,10 @@ class axi_responder extends uvm_component;
                         lane_w = lane_offset_w + j;
                         if (wstrb[lane_w]) begin
                             mem[wr_tx.awaddr + j] = wdata[lane_w*8 +: 8];
-                            // `uvm_info("MEM_WRITE", $sformatf("j = %0d, mem[%h] = wdata[%0d:%0d], data = %0h",j, wr_tx.addr+j,lane_w*8+8,lane_w*8, wdata[lane_w*8 +: 8]), UVM_DEBUG);
+                            `uvm_info("---->>>>>>MEM_WRITE", $sformatf("j = %0d, mem[%h] = wdata[%0d:%0d], data = %0h",j, wr_tx.awaddr+j,lane_w*8+8,lane_w*8, wdata[lane_w*8 +: 8]), UVM_MEDIUM);
                         end
                     end
-                    `uvm_info(get_type_name(), $sformatf("Writing at addr = %h, data = %h, strb = %b", wr_tx.awaddr, wdata, wstrb), UVM_MEDIUM);
+                    `uvm_info(get_type_name(), $sformatf("---------->>>>>Writing at addr = %h, data = %h, strb = %b", wr_tx.awaddr, wdata, wstrb), UVM_MEDIUM);
                     if( wr_tx.awburst inside {INCR, WRAP} )
                         wr_tx.awaddr += 2**wr_tx.awsize;        // Incrementing the address by the burst_size
                     if(wr_tx.awburst == WRAP)
@@ -139,7 +139,7 @@ class axi_responder extends uvm_component;
 
                 fork
                     read_data_phase(rd_tx);
-                join_none
+                join
 
             end
             else begin
@@ -187,21 +187,17 @@ class axi_responder extends uvm_component;
                 for(int j = 0; j < 2**rd_tx.arsize; j++) begin
                     int lane_r = lane_offset_r + j;
                     rdata[lane_r*8 +: 8] = mem[rd_tx.araddr + j];  // Cleaner bit slice assignment
+                    `uvm_info("RESP: READING BYTE_WISE", $sformatf("---->>>>Reading from memory at addr = %h, data = %h", rd_tx.araddr, rdata[lane_r*8 +: 8]), UVM_MEDIUM);
                 end
 
                 vif.slave_cb.rdata     <=      rdata;
-                `uvm_info(get_type_name(), $sformatf("Reading to intf at addr = %h, data = %h", rd_tx.araddr, rdata), UVM_MEDIUM);
+                `uvm_info("RESP: WHOLE_DATA_READ", $sformatf("--------->>>>>>>>Reading to intf at addr = %h, data = %h", rd_tx.araddr, rdata), UVM_MEDIUM);
 
                 if( rd_tx.arburst inside {INCR, WRAP} )
                     rd_tx.araddr    +=      2**rd_tx.arsize;  
                 if(rd_tx.arburst == WRAP)        
                     rd_tx.araddr = rd_tx.check_wrap(rd_tx.araddr);                                  // Resets the addr to lower_boundary when it reaches the upper boundary
             end
-            // else if( rd_tx.burst_type == FIXED ) begin
-            //     rdata = fifo.pop_front();
-            //     vif.slave_cb.rdata     <=      rdata;
-            //     `uvm_info(get_type_name(), $sformatf("Reading at addr = %h, data = %h", rd_tx.addr, rdata), UVM_MEDIUM);
-            // end
             else begin
                 `uvm_error("READ RSVD_BURST_TYPE_ERROR", $sformatf("READ BURST_TYPE is neither INCR, WRAP, or FIXED"));
             end

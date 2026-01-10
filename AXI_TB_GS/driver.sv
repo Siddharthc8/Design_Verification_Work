@@ -31,8 +31,8 @@ class driver extends uvm_driver #(transaction);
             if(req.kind==STIMULUS||req.kind==RESET )
                 `uvm_info(get_type_name(),$sformatf("Driver received %0s transaction from TLM port",req.kind.name()),UVM_MEDIUM);
 
-                if(req.kind==RESET) reset();
-                else if(req.kind==STIMULUS) drive(req); 
+                // if(req.kind==RESET) reset_phase();
+                if(req.kind==STIMULUS) drive(req); 
 
             seq_item_port.item_done();
             `uvm_info(get_type_name(),$sformatf("Driver transaction done"),UVM_MEDIUM);
@@ -41,16 +41,16 @@ class driver extends uvm_driver #(transaction);
 
     endtask
 
-    task reset();
+    task reset_phase(uvm_phase phase);
+    super.reset_phase(phase);
       `uvm_info("Reset_PKT","Applying Reset transction into DUT",UVM_MEDIUM);
-          vif.cb.awvalid    <=    0;
-          vif.cb.wvalid     <=    0;
-          vif.cb.bready     <=    0;
-          vif.cb.arvalid    <=    0;
-          vif.cb.rready     <=    0;
-          vif.cb.reset     <=    1;
-          repeat(2) @(vif.cb);
+          reset_write_addr_channel();
+          reset_write_data_channel();
+          reset_read_addr_channel();
           vif.cb.reset     <=    0;
+        //   repeat(2) @(vif.cb);
+        //   vif.cb.reset     <=    0;
+        //   repeat(2) @(vif.cb);
       `uvm_info("Reset_PKT"," Reset transaction done",UVM_MEDIUM);
 
       //awaddr, awid, awvalid, awburst, awlen, awsize, awprot, awcache, 
@@ -60,7 +60,7 @@ class driver extends uvm_driver #(transaction);
     endtask
 
     task drive(transaction tr);
-
+        // reset();
         fork 
             `uvm_info(get_type_name(), "Driving tx", UVM_MEDIUM);
             begin
@@ -89,7 +89,7 @@ class driver extends uvm_driver #(transaction);
         wa_smp.get(1);     // Semaphore GET
 
         @(vif.cb);
-        `uvm_info("Driver-write",$sformatf("WRITE ADDRESS BUS started with addr=%0d",tr.awaddr),UVM_DEBUG);
+        `uvm_info("Driver-write",$sformatf("WRITE ADDRESS BUS started with addr=%0d",tr.awaddr), UVM_MEDIUM);
         vif.cb.awid       <=     tr.awid;
         vif.cb.awaddr     <=     tr.awaddr;
         vif.cb.awlen      <=     tr.awlen;
@@ -102,7 +102,7 @@ class driver extends uvm_driver #(transaction);
 
           wait(vif.cb.awready==1);
 
-        `uvm_info("Driver-write",$sformatf("WRITE ADDRESS BUS completed with addr=%0d",tr.awaddr),UVM_DEBUG);
+        `uvm_info("Driver-write",$sformatf("WRITE ADDRESS BUS completed with addr=%0d",tr.awaddr), UVM_MEDIUM);
 
         wa_smp.put(1);     // Semaphore PUT
 

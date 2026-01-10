@@ -1,0 +1,164 @@
+UVM_INFO axi_responder.sv(45) @ 0: uvm_test_top.env.s_agent.responder [axi_responder] Run Phase on Responder tx
+UVM_INFO driver.sv(46) @ 0: uvm_test_top.env.m_agent.drvr [Reset_PKT] Applying Reset transction into DUT
+UVM_INFO driver.sv(54) @ 0: uvm_test_top.env.m_agent.drvr [Reset_PKT]  Reset transaction done
+UVM_INFO axi_responder.sv(39) @ 0: uvm_test_top.env.s_agent.responder [axi_responder] Responder memory cleared on reset
+UVM_INFO scoreboard.sv(47) @ 0: uvm_test_top.env.scb [scoreboard #(class $unit::transaction)] Scoreboard memory cleared on reset
+UVM_INFO driver.sv(32) @ 10: uvm_test_top.env.m_agent.drvr [driver] Driver received STIMULUS transaction from TLM port
+UVM_INFO driver.sv(65) @ 10: uvm_test_top.env.m_agent.drvr [driver] Driving tx
+UVM_INFO driver.sv(92) @ 15: uvm_test_top.env.m_agent.drvr [Driver-write] WRITE ADDRESS BUS started with addr=104
+UVM_INFO axi_responder.sv(66) @ 25: uvm_test_top.env.s_agent.responder [AWSIZE_DEBUG] Captured awsize = 0, tx.burst_size = 0, vif.bursts_size = 0 from interface
+UVM_INFO transaction.sv(152) @ 25: reporter@@wr_tx [AXI_TX WRAP CALC]  addr = 0068
+UVM_INFO transaction.sv(153) @ 25: reporter@@wr_tx [AXI_TX WRAP CALC]  wrap_lower_addr = 0066 
+UVM_INFO transaction.sv(154) @ 25: reporter@@wr_tx [AXI_TX WRAP CALC]  wrap_upper_addr = 0068 
+UVM_INFO driver.sv(105) @ 35: uvm_test_top.env.m_agent.drvr [Driver-write] WRITE ADDRESS BUS completed with addr=104
+UVM_INFO imonitor.sv(63) @ 35: uvm_test_top.env.m_agent.iMon [iMonitor] End of write addr channel
+UVM_INFO imonitor.sv(91) @ 35: uvm_test_top.env.m_agent.iMon [iMonitor] End of wdata channel
+UVM_INFO axi_responder.sv(66) @ 35: uvm_test_top.env.s_agent.responder [AWSIZE_DEBUG] Captured awsize = 0, tx.burst_size = 0, vif.bursts_size = 0 from interface
+UVM_INFO transaction.sv(152) @ 35: reporter@@wr_tx [AXI_TX WRAP CALC]  addr = 0068
+UVM_INFO transaction.sv(153) @ 35: reporter@@wr_tx [AXI_TX WRAP CALC]  wrap_lower_addr = 0066 
+UVM_INFO transaction.sv(154) @ 35: reporter@@wr_tx [AXI_TX WRAP CALC]  wrap_upper_addr = 0068 
+UVM_INFO axi_responder.sv(91) @ 55: uvm_test_top.env.s_agent.responder [axi_responder] DATA at responder awsize = 0, addr = 0068, data = 000000000000038e, strb = 00000001
+UVM_INFO axi_responder.sv(99) @ 55: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 0, mem[00000068] = wdata[8:0], data = 8e
+UVM_INFO axi_responder.sv(102) @ 55: uvm_test_top.env.s_agent.responder [axi_responder] ---------->>>>>Writing at addr = 0068, data = 000000000000038e, strb = 00000001
+UVM_INFO axi_responder.sv(91) @ 65: uvm_test_top.env.s_agent.responder [axi_responder] DATA at responder awsize = 0, addr = 0069, data = 000000000000038e, strb = 00000001
+UVM_INFO axi_responder.sv(102) @ 65: uvm_test_top.env.s_agent.responder [axi_responder] ---------->>>>>Writing at addr = 0069, data = 000000000000038e, strb = 00000001
+UVM_INFO axi_responder.sv(91) @ 75: uvm_test_top.env.s_agent.responder [axi_responder] DATA at responder awsize = 0, addr = 006a, data = 00000000000000f0, strb = 00000001
+UVM_INFO axi_responder.sv(102) @ 75: uvm_test_top.env.s_agent.responder [axi_responder] ---------->>>>>Writing at addr = 006a, data = 00000000000000f0, strb = 00000001
+UVM_INFO axi_responder.sv(91) @ 85: uvm_test_top.env.s_agent.responder [axi_responder] DATA at responder awsize = 0, addr = 006b, data = 0000000000000185, strb = 00000001
+UVM_INFO axi_responder.sv(102) @ 85: uvm_test_top.env.s_agent.responder [axi_responder] ---------->>>>>Writing at addr = 006b, data = 0000000000000185, strb = 00000001
+UVM_INFO imonitor.sv(101) @ 95: uvm_test_top.env.m_agent.iMon [iMonitor] End of bresp channel
+UVM_INFO transaction.sv(152) @ 95: reporter@@tr [AXI_TX WRAP CALC]  addr = 0068
+UVM_INFO transaction.sv(153) @ 95: reporter@@tr [AXI_TX WRAP CALC]  wrap_lower_addr = 0066 
+UVM_INFO transaction.sv(154) @ 95: reporter@@tr [AXI_TX WRAP CALC]  wrap_upper_addr = 0068 
+UVM_INFO imonitor.sv(105) @ 95: uvm_test_top.env.m_agent.iMon [iMonitor] Send tr to scoreboard from iMonitor
+UVM_INFO imonitor.sv(91) @ 95: uvm_test_top.env.m_agent.iMon [iMonitor] End of wdata channel
+UVM_INFO imonitor.sv(101) @ 95: uvm_test_top.env.m_agent.iMon [iMonitor] End of bresp channel
+UVM_INFO transaction.sv(152) @ 95: reporter@@tr [AXI_TX WRAP CALC]  addr = 0068
+UVM_INFO transaction.sv(153) @ 95: reporter@@tr [AXI_TX WRAP CALC]  wrap_lower_addr = 0066 
+UVM_INFO transaction.sv(154) @ 95: reporter@@tr [AXI_TX WRAP CALC]  wrap_upper_addr = 0068 
+UVM_INFO imonitor.sv(105) @ 95: uvm_test_top.env.m_agent.iMon [iMonitor] Send tr to scoreboard from iMonitor
+UVM_INFO driver.sv(38) @ 105: uvm_test_top.env.m_agent.drvr [driver] Driver transaction done
+UVM_INFO imonitor.sv(91) @ 105: uvm_test_top.env.m_agent.iMon [iMonitor] End of wdata channel
+UVM_INFO driver.sv(32) @ 105: uvm_test_top.env.m_agent.drvr [driver] Driver received STIMULUS transaction from TLM port
+UVM_INFO driver.sv(65) @ 105: uvm_test_top.env.m_agent.drvr [driver] Driving tx
+UVM_INFO driver.sv(92) @ 115: uvm_test_top.env.m_agent.drvr [Driver-write] WRITE ADDRESS BUS started with addr=168
+UVM_INFO axi_responder.sv(66) @ 125: uvm_test_top.env.s_agent.responder [AWSIZE_DEBUG] Captured awsize = 2, tx.burst_size = 2, vif.bursts_size = 2 from interface
+UVM_INFO transaction.sv(152) @ 125: reporter@@wr_tx [AXI_TX WRAP CALC]  addr = 00a8
+UVM_INFO transaction.sv(153) @ 125: reporter@@wr_tx [AXI_TX WRAP CALC]  wrap_lower_addr = 00a8 
+UVM_INFO transaction.sv(154) @ 125: reporter@@wr_tx [AXI_TX WRAP CALC]  wrap_upper_addr = 00bf 
+UVM_INFO driver.sv(105) @ 135: uvm_test_top.env.m_agent.drvr [Driver-write] WRITE ADDRESS BUS completed with addr=168
+UVM_INFO axi_responder.sv(66) @ 135: uvm_test_top.env.s_agent.responder [AWSIZE_DEBUG] Captured awsize = 2, tx.burst_size = 2, vif.bursts_size = 2 from interface
+UVM_INFO transaction.sv(152) @ 135: reporter@@wr_tx [AXI_TX WRAP CALC]  addr = 00a8
+UVM_INFO transaction.sv(153) @ 135: reporter@@wr_tx [AXI_TX WRAP CALC]  wrap_lower_addr = 00a8 
+UVM_INFO transaction.sv(154) @ 135: reporter@@wr_tx [AXI_TX WRAP CALC]  wrap_upper_addr = 00bf 
+UVM_INFO axi_responder.sv(91) @ 155: uvm_test_top.env.s_agent.responder [axi_responder] DATA at responder awsize = 2, addr = 00a8, data = 00000000000002da, strb = 00001111
+UVM_INFO axi_responder.sv(99) @ 155: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 0, mem[000000a8] = wdata[8:0], data = da
+UVM_INFO axi_responder.sv(99) @ 155: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 1, mem[000000a9] = wdata[16:8], data = 2
+UVM_INFO axi_responder.sv(99) @ 155: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 2, mem[000000aa] = wdata[24:16], data = 0
+UVM_INFO axi_responder.sv(99) @ 155: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 3, mem[000000ab] = wdata[32:24], data = 0
+UVM_INFO axi_responder.sv(102) @ 155: uvm_test_top.env.s_agent.responder [axi_responder] ---------->>>>>Writing at addr = 00a8, data = 00000000000002da, strb = 00001111
+UVM_INFO axi_responder.sv(91) @ 165: uvm_test_top.env.s_agent.responder [axi_responder] DATA at responder awsize = 2, addr = 00ac, data = 00000000000002da, strb = 00001111
+UVM_INFO axi_responder.sv(102) @ 165: uvm_test_top.env.s_agent.responder [axi_responder] ---------->>>>>Writing at addr = 00ac, data = 00000000000002da, strb = 00001111
+UVM_INFO axi_responder.sv(91) @ 175: uvm_test_top.env.s_agent.responder [axi_responder] DATA at responder awsize = 2, addr = 00b0, data = 000000000000021a, strb = 00001111
+UVM_INFO axi_responder.sv(99) @ 175: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 0, mem[000000b0] = wdata[8:0], data = 1a
+UVM_INFO axi_responder.sv(99) @ 175: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 1, mem[000000b1] = wdata[16:8], data = 2
+UVM_INFO axi_responder.sv(99) @ 175: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 2, mem[000000b2] = wdata[24:16], data = 0
+UVM_INFO axi_responder.sv(99) @ 175: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 3, mem[000000b3] = wdata[32:24], data = 0
+UVM_INFO axi_responder.sv(102) @ 175: uvm_test_top.env.s_agent.responder [axi_responder] ---------->>>>>Writing at addr = 00b0, data = 000000000000021a, strb = 00001111
+UVM_INFO axi_responder.sv(91) @ 185: uvm_test_top.env.s_agent.responder [axi_responder] DATA at responder awsize = 2, addr = 00b4, data = 00000000000003a3, strb = 00001111
+UVM_INFO axi_responder.sv(102) @ 185: uvm_test_top.env.s_agent.responder [axi_responder] ---------->>>>>Writing at addr = 00b4, data = 00000000000003a3, strb = 00001111
+UVM_INFO axi_responder.sv(91) @ 195: uvm_test_top.env.s_agent.responder [axi_responder] DATA at responder awsize = 2, addr = 00b8, data = 0000000000000324, strb = 00001111
+UVM_INFO axi_responder.sv(99) @ 195: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 0, mem[000000b8] = wdata[8:0], data = 24
+UVM_INFO axi_responder.sv(99) @ 195: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 1, mem[000000b9] = wdata[16:8], data = 3
+UVM_INFO axi_responder.sv(99) @ 195: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 2, mem[000000ba] = wdata[24:16], data = 0
+UVM_INFO axi_responder.sv(99) @ 195: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 3, mem[000000bb] = wdata[32:24], data = 0
+UVM_INFO axi_responder.sv(102) @ 195: uvm_test_top.env.s_agent.responder [axi_responder] ---------->>>>>Writing at addr = 00b8, data = 0000000000000324, strb = 00001111
+UVM_INFO axi_responder.sv(91) @ 205: uvm_test_top.env.s_agent.responder [axi_responder] DATA at responder awsize = 2, addr = 00bc, data = 00000000000002ec, strb = 00001111
+UVM_INFO axi_responder.sv(102) @ 205: uvm_test_top.env.s_agent.responder [axi_responder] ---------->>>>>Writing at addr = 00bc, data = 00000000000002ec, strb = 00001111
+UVM_INFO axi_responder.sv(91) @ 215: uvm_test_top.env.s_agent.responder [axi_responder] DATA at responder awsize = 2, addr = 00c0, data = 0000000000000318, strb = 00001111
+UVM_INFO axi_responder.sv(99) @ 215: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 0, mem[000000c0] = wdata[8:0], data = 18
+UVM_INFO axi_responder.sv(99) @ 215: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 1, mem[000000c1] = wdata[16:8], data = 3
+UVM_INFO axi_responder.sv(99) @ 215: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 2, mem[000000c2] = wdata[24:16], data = 0
+UVM_INFO axi_responder.sv(99) @ 215: uvm_test_top.env.s_agent.responder [---->>>>>>MEM_WRITE] j = 3, mem[000000c3] = wdata[32:24], data = 0
+UVM_INFO axi_responder.sv(102) @ 215: uvm_test_top.env.s_agent.responder [axi_responder] ---------->>>>>Writing at addr = 00c0, data = 0000000000000318, strb = 00001111
+UVM_INFO imonitor.sv(101) @ 235: uvm_test_top.env.m_agent.iMon [iMonitor] End of bresp channel
+UVM_INFO transaction.sv(152) @ 235: reporter@@tr [AXI_TX WRAP CALC]  addr = 0068
+UVM_INFO transaction.sv(153) @ 235: reporter@@tr [AXI_TX WRAP CALC]  wrap_lower_addr = 0066 
+UVM_INFO transaction.sv(154) @ 235: reporter@@tr [AXI_TX WRAP CALC]  wrap_upper_addr = 0068 
+UVM_INFO imonitor.sv(105) @ 235: uvm_test_top.env.m_agent.iMon [iMonitor] Send tr to scoreboard from iMonitor
+UVM_INFO driver.sv(38) @ 245: uvm_test_top.env.m_agent.drvr [driver] Driver transaction done
+UVM_INFO driver.sv(32) @ 245: uvm_test_top.env.m_agent.drvr [driver] Driver received STIMULUS transaction from TLM port
+UVM_INFO driver.sv(65) @ 245: uvm_test_top.env.m_agent.drvr [driver] Driving tx
+UVM_INFO omonitor.sv(63) @ 265: uvm_test_top.env.s_agent.oMon [oMonitor] Waiting for arready and arvalid
+UVM_INFO transaction.sv(152) @ 265: reporter@@rd_tx [AXI_TX WRAP CALC]  addr = 0068
+UVM_INFO transaction.sv(153) @ 265: reporter@@rd_tx [AXI_TX WRAP CALC]  wrap_lower_addr = 0066 
+UVM_INFO transaction.sv(154) @ 265: reporter@@rd_tx [AXI_TX WRAP CALC]  wrap_upper_addr = 0068 
+UVM_INFO omonitor.sv(94) @ 275: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO omonitor.sv(94) @ 275: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO omonitor.sv(94) @ 275: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO axi_responder.sv(190) @ 275: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 0068, data = 8e
+UVM_INFO axi_responder.sv(194) @ 275: uvm_test_top.env.s_agent.responder [RESP: WHOLE_DATA_READ] --------->>>>>>>>Reading to intf at addr = 0068, data = 000000000000008e
+UVM_INFO omonitor.sv(63) @ 275: uvm_test_top.env.s_agent.oMon [oMonitor] Waiting for arready and arvalid
+UVM_INFO omonitor.sv(94) @ 275: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO omonitor.sv(94) @ 275: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO omonitor.sv(94) @ 275: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO axi_responder.sv(190) @ 305: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 0069, data = 00
+UVM_INFO axi_responder.sv(194) @ 305: uvm_test_top.env.s_agent.responder [RESP: WHOLE_DATA_READ] --------->>>>>>>>Reading to intf at addr = 0069, data = 0000000000000000
+UVM_INFO axi_responder.sv(190) @ 325: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 006a, data = 00
+UVM_INFO axi_responder.sv(194) @ 325: uvm_test_top.env.s_agent.responder [RESP: WHOLE_DATA_READ] --------->>>>>>>>Reading to intf at addr = 006a, data = 0000000000000000
+UVM_INFO driver.sv(38) @ 335: uvm_test_top.env.m_agent.drvr [driver] Driver transaction done
+UVM_INFO driver.sv(32) @ 335: uvm_test_top.env.m_agent.drvr [driver] Driver received STIMULUS transaction from TLM port
+UVM_INFO driver.sv(65) @ 335: uvm_test_top.env.m_agent.drvr [driver] Driving tx
+UVM_INFO omonitor.sv(63) @ 355: uvm_test_top.env.s_agent.oMon [oMonitor] Waiting for arready and arvalid
+UVM_INFO omonitor.sv(94) @ 355: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO omonitor.sv(94) @ 355: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO omonitor.sv(94) @ 355: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO omonitor.sv(94) @ 355: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO omonitor.sv(94) @ 355: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO omonitor.sv(94) @ 355: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO transaction.sv(152) @ 355: reporter@@rd_tx [AXI_TX WRAP CALC]  addr = 00a8
+UVM_INFO transaction.sv(153) @ 355: reporter@@rd_tx [AXI_TX WRAP CALC]  wrap_lower_addr = 00a8 
+UVM_INFO transaction.sv(154) @ 355: reporter@@rd_tx [AXI_TX WRAP CALC]  wrap_upper_addr = 00bf 
+UVM_INFO omonitor.sv(63) @ 355: uvm_test_top.env.s_agent.oMon [oMonitor] Waiting for arready and arvalid
+UVM_INFO omonitor.sv(94) @ 355: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO omonitor.sv(94) @ 355: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO omonitor.sv(94) @ 355: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO omonitor.sv(94) @ 355: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO omonitor.sv(94) @ 355: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO omonitor.sv(94) @ 355: uvm_test_top.env.s_agent.oMon [oMonitor]  Send tr to scoreboard from iMonitor 
+UVM_INFO axi_responder.sv(190) @ 365: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00a8, data = da
+UVM_INFO axi_responder.sv(190) @ 365: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00a8, data = 02
+UVM_INFO axi_responder.sv(190) @ 365: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00a8, data = 00
+UVM_INFO axi_responder.sv(190) @ 365: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00a8, data = 00
+UVM_INFO axi_responder.sv(194) @ 365: uvm_test_top.env.s_agent.responder [RESP: WHOLE_DATA_READ] --------->>>>>>>>Reading to intf at addr = 00a8, data = 00000000000002da
+UVM_INFO axi_responder.sv(190) @ 405: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00ac, data = 00
+UVM_INFO axi_responder.sv(190) @ 405: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00ac, data = 00
+UVM_INFO axi_responder.sv(190) @ 405: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00ac, data = 00
+UVM_INFO axi_responder.sv(190) @ 405: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00ac, data = 00
+UVM_INFO axi_responder.sv(194) @ 405: uvm_test_top.env.s_agent.responder [RESP: WHOLE_DATA_READ] --------->>>>>>>>Reading to intf at addr = 00ac, data = 0000000000000000
+UVM_INFO axi_responder.sv(190) @ 425: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00b0, data = 1a
+UVM_INFO axi_responder.sv(190) @ 425: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00b0, data = 02
+UVM_INFO axi_responder.sv(190) @ 425: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00b0, data = 00
+UVM_INFO axi_responder.sv(190) @ 425: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00b0, data = 00
+UVM_INFO axi_responder.sv(194) @ 425: uvm_test_top.env.s_agent.responder [RESP: WHOLE_DATA_READ] --------->>>>>>>>Reading to intf at addr = 00b0, data = 000000000000021a
+UVM_INFO axi_responder.sv(190) @ 445: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00b4, data = 00
+UVM_INFO axi_responder.sv(190) @ 445: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00b4, data = 00
+UVM_INFO axi_responder.sv(190) @ 445: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00b4, data = 00
+UVM_INFO axi_responder.sv(190) @ 445: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00b4, data = 00
+UVM_INFO axi_responder.sv(194) @ 445: uvm_test_top.env.s_agent.responder [RESP: WHOLE_DATA_READ] --------->>>>>>>>Reading to intf at addr = 00b4, data = 0000000000000000
+UVM_INFO axi_responder.sv(190) @ 465: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00b8, data = 24
+UVM_INFO axi_responder.sv(190) @ 465: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00b8, data = 03
+UVM_INFO axi_responder.sv(190) @ 465: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00b8, data = 00
+UVM_INFO axi_responder.sv(190) @ 465: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00b8, data = 00
+UVM_INFO axi_responder.sv(194) @ 465: uvm_test_top.env.s_agent.responder [RESP: WHOLE_DATA_READ] --------->>>>>>>>Reading to intf at addr = 00b8, data = 0000000000000324
+UVM_INFO driver.sv(38) @ 475: uvm_test_top.env.m_agent.drvr [driver] Driver transaction done
+UVM_INFO axi_responder.sv(190) @ 485: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00bc, data = 00
+UVM_INFO axi_responder.sv(190) @ 485: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00bc, data = 00
+UVM_INFO axi_responder.sv(190) @ 485: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00bc, data = 00
+UVM_INFO axi_responder.sv(190) @ 485: uvm_test_top.env.s_agent.responder [RESP: READING BYTE_WISE] ---->>>>Reading from memory at addr = 00bc, data = 00
+UVM_INFO axi_responder.sv(194) @ 485: uvm_test_top.env.s_agent.responder [RESP: WHOLE_DATA_READ] --------->>>>>>>>Reading to intf at addr = 00bc, data = 0000000000000000
+UVM_INFO /apps/vcsmx/vcs/U-2023.03-SP2//etc/uvm-1.2/src/base/uvm_objection.svh(1276) @ 1975: reporter [TEST_DONE] 'run' phase is ready to proceed to the 'extract' phase
+UVM_INFO scoreboard.sv(168) @ 1975: uvm_test_top.env.scb [SCB] Scoreboard completed with matches=0 mismatches=0
+UVM_INFO environment.sv(38) @ 1975: uvm_test_top.env [PASS] matched pkt_count = 0, mismatched pkt_count = 0
+UVM_ERROR test_lib.sv(28) @ 1975: uvm_test_top [STATUS] TEST FAIL, num_matches = 0, num_mismatches = 0
+UVM_INFO /apps/vcsmx/vcs/U-2023.03-SP2//etc/uvm-1.2/src/base/uvm_report_server.svh(904) @ 1975: reporter [UVM/REPORT/SERVER] 

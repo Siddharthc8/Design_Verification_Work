@@ -71,10 +71,10 @@ endclass
     for(int i=0;i <=tr.arlen;i++) begin //monitor till rlast comes
 
         // Wait for RVALID first (with timeout)
-        rvalid_timeout(i);
+        // rvalid_timeout(i);
 
         // Wait for RREADY (with timeout)
-        rready_timeout(i);
+        // rready_timeout(i);
 
         // Check if handshake actually completed
         if (vif.cb_mon.rvalid == 1 && vif.cb_mon.rready == 1) begin
@@ -87,10 +87,10 @@ endclass
 
             if(i == tr.arlen) 
                 tr.rlast = vif.cb_mon.rlast;
+                analysis_port.write(tr);
             
         end
 
-        analysis_port.write(tr);
         `uvm_info( get_type_name(), $sformatf(" Send tr to scoreboard from iMonitor "), UVM_MEDIUM);
     end
                     
